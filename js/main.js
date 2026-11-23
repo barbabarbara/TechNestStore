@@ -1,34 +1,34 @@
+// Import the shared layout function.
+import { initLayout } from "./ui.js";
 
-// 1. Select the button from the HTML.
-const informationButton = document.querySelector(
-  "#information-button",
-);
+// Create the header and footer.
+initLayout();
 
-// 2. Select the paragraph containing store information.
-const storeInformation = document.querySelector(
-  "#store-information",
-);
+// Find the homepage information button.
+const informationButton = document.querySelector("#information-button");
 
-// 3. Listen for a click on the button, and run a function when it happens.
-informationButton.addEventListener("click", () => {
-  // 4. Find out whether the information is visible.
-  const isExpanded =
-    informationButton.getAttribute("aria-expanded") === "true";
+// Find the paragraph controlled by the button.
+const storeInformation = document.querySelector("#store-information");
 
-  // 5. Reverse the current state, so if it was true, it becomes false, and vice versa.
-  const newState = !isExpanded;
+// Only register the listener if both elements exist.
+if (informationButton && storeInformation) {
+  informationButton.addEventListener("click", () => {
+    // Read the current expanded state.
+    const isExpanded =
+      informationButton.getAttribute("aria-expanded") === "true";
 
-  // 6. Update the accessibility attribute, so screen readers know whether the information is visible.
-  informationButton.setAttribute(
-    "aria-expanded",
-    String(newState),
-  );
+    // Toggle the state.
+    const newState = !isExpanded;
 
-  // 7. Show or hide the paragraph, depending on the new state.
-  storeInformation.hidden = !newState;
+    // Update the accessibility information.
+    informationButton.setAttribute("aria-expanded", String(newState));
 
-  // 8. Change the button text.
-  informationButton.textContent = newState
-    ? "Hide store information"
-    : "Show store information";
-});
+    // Toggle paragraph visibility.
+    storeInformation.hidden = !newState;
+
+    // Update the button label.
+    informationButton.textContent = newState
+      ? "Hide store information"
+      : "About TechNest";
+  });
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Character encoding -->
+    <meta charset="UTF-8" />
+
+    <!-- Responsive design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Page description -->
+    <meta name="description" content="View your favorite electronics at TechNest." />
+
+    <!-- Browser tab title -->
+    <title>Favorites | TechNest</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<!-- Page configuration for the shared layout -->
+
+<body data-page="favorites" data-root="../">
+    <!-- Accessibility: skip navigation -->
+    <a class="skip-link" href="#main">
+        Skip to main content
+    </a>
+
+    <!-- JavaScript generates the shared header -->
+    <div id="site-header"></div>
+
+    <!-- Main content -->
+    <main id="main" class="shell">
+        <section aria-labelledby="favorites-heading">
+            <h1 id="favorites-heading">My favorites</h1>
+
+            <p>
+                Find and manage the products you have saved.
+            </p>
+
+            <!-- Favorite products will be displayed here later. -->
+        </section>
+    </main>
+
+    <!-- JavaScript generates the shared footer -->
+    <div id="site-footer"></div>
+
+    <!-- Shared JavaScript layout -->
+    <script type="module" src="../js/layout.js"></script>
+</body>
+
+</html>

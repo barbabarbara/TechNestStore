@@ -5,10 +5,10 @@
 
 ## Progress Tracker
 
-- [ ] **1. Build the homepage** — *Start here*
+- [X] **1. Build the homepage** — *Start here*
   - HTML structure, semantic elements, CSS, and first JavaScript interactions.
 
-- [ ] **2. Create reusable navigation**
+- [X] **2. Create reusable navigation**
   - JavaScript functions, modules, `import`, `export`, `initLayout()`, and DOM manipulation.
 
 - [ ] **3. Connect the DummyJSON API**
