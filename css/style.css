@@ -1,0 +1,103 @@
+/* Basic page settings */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #202124;
+  background-color: #ffffff;
+}
+
+/* Shared content width */
+.container {
+  width: min(1100px, 90%);
+  margin: 0 auto;
+}
+
+/* Header and navigation */
+.site-header {
+  padding: 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #202124;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  color: #202124;
+  text-decoration: none;
+}
+
+/* Homepage introduction */
+.hero {
+  padding: 100px 0;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 5vw, 64px);
+}
+
+.hero p {
+  color: #6b7280;
+}
+
+/* Interactive button */
+button {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  background-color: #5269c9;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #4055ad;
+}
+
+/* Category section */
+#categories {
+  padding-bottom: 100px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.category-grid article {
+  padding: 32px;
+  background-color: #f5f6f8;
+  border-radius: 14px;
+}
+
+/* Footer */
+.site-footer {
+  padding: 24px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 600px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}
