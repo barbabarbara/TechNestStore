@@ -1,10 +1,6 @@
-/* ==========================================================
-   TechNestStore | Product Details
-   Lesson 5 - Larger image gallery with navigation arrows
-   ========================================================== */
-
 import { initLayout } from "./ui.js";
 import { getProductById } from "./api.js";
+import { isFavorite, toggleFavorite, addToCart } from "./storage.js";
 
 initLayout();
 
@@ -220,6 +216,58 @@ function createProductInformation(product) {
     information.append(specifications);
   }
 
+  // Lesson 6: actions are separate from the image gallery.
+  const actions = document.createElement("div");
+  actions.className = "product-detail-actions";
+
+  const favoriteButton = document.createElement("button");
+  favoriteButton.type = "button";
+  favoriteButton.className = "detail-favorite-button";
+
+  function updateFavoriteButton() {
+    const saved = isFavorite(product.id);
+    favoriteButton.textContent = saved ? "♥ Saved" : "♡ Save to favorites";
+    favoriteButton.setAttribute("aria-pressed", String(saved));
+  }
+
+  updateFavoriteButton();
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "detail-add-button";
+  addButton.textContent = "Add to cart";
+  addButton.disabled = product.stock === 0 || !Number.isFinite(product.price);
+
+  const actionMessage = document.createElement("p");
+  actionMessage.className = "action-status";
+  actionMessage.setAttribute("role", "status");
+  actionMessage.setAttribute("aria-live", "polite");
+
+  favoriteButton.addEventListener("click", () => {
+    try {
+      const saved = toggleFavorite(product.id);
+      updateFavoriteButton();
+      actionMessage.textContent = saved
+        ? "Product saved to favorites."
+        : "Product removed from favorites.";
+    } catch (error) {
+      console.error(error);
+      actionMessage.textContent = "Unable to save favorite in this browser.";
+    }
+  });
+
+  addButton.addEventListener("click", () => {
+    try {
+      const count = addToCart(product.id, 1, product.stock);
+      actionMessage.textContent = `Added to cart. ${count} ${count === 1 ? "item" : "items"} in cart.`;
+    } catch (error) {
+      console.error(error);
+      actionMessage.textContent =
+        "Unable to save cart changes in this browser.";
+    }
+  });
+
+  actions.append(favoriteButton, addButton);
+  information.append(actions, actionMessage);
   return information;
 }
 

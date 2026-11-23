@@ -2,51 +2,31 @@
 <html lang="en">
 
 <head>
-    <!-- Character encoding -->
     <meta charset="UTF-8" />
-
-    <!-- Responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Page description -->
-    <meta name="description" content="View your favorite electronics at TechNest." />
-
-    <!-- Browser tab title -->
+    <meta name="description" content="View your saved electronics at TechNest." />
     <title>Favorites | TechNest</title>
-
-    <!-- External CSS -->
     <link rel="stylesheet" href="../css/style.css" />
 </head>
 
-<!-- Page configuration for the shared layout -->
-
 <body data-page="favorites" data-root="../">
-    <!-- Accessibility: skip navigation -->
-    <a class="skip-link" href="#main">
-        Skip to main content
-    </a>
-
-    <!-- JavaScript generates the shared header -->
+    <a class="skip-link" href="#main">Skip to main content</a>
     <div id="site-header"></div>
-
-    <!-- Main content -->
     <main id="main" class="shell">
         <section aria-labelledby="favorites-heading">
             <h1 id="favorites-heading">My favorites</h1>
-
-            <p>
-                Find and manage the products you have saved.
-            </p>
-
-            <!-- Favorite products will be displayed here later. -->
+            <p>Keep your favorite products in one place.</p>
+            <p id="favorites-status" role="status">Loading favorites...</p>
+            <p id="favorites-action-status" class="action-status" role="status" aria-live="polite"></p>
+            <div id="favorites-empty" class="empty-panel" hidden>
+                <p>No favorites saved yet.</p>
+                <a class="primary-link" href="./products.html">Explore the catalogue</a>
+            </div>
+            <ul id="favorites-list" class="product-grid"></ul>
         </section>
     </main>
-
-    <!-- JavaScript generates the shared footer -->
     <div id="site-footer"></div>
-
-    <!-- Shared JavaScript layout -->
-    <script type="module" src="../js/layout.js"></script>
+    <script type="module" src="../js/favorites.js"></script>
 </body>
 
 </html>

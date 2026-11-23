@@ -1,3 +1,5 @@
+import { getFavoriteIds, getCartItemCount } from "./storage.js";
+
 // Navigation data: one object for each page.
 const navigationItems = [
   {
@@ -27,6 +29,9 @@ const navigationItems = [
   },
 ];
 
+// Register window listeners only once, even if initLayout runs again.
+let countListenersAttached = false;
+
 // Export the function for use on other pages.
 export function initLayout() {
   // Find the placeholders in the HTML.
@@ -52,13 +57,20 @@ export function initLayout() {
 
       const currentAttribute = isActive ? ' aria-current="page"' : "";
 
+      // Only Favorites and Cart need an item-count badge.
+      const countBadge =
+        item.page === "favorites" || item.page === "cart"
+          ? `<span class="nav-count" data-nav-count="${item.page}" aria-hidden="true" hidden></span>`
+          : "";
+
       return `
         <li>
           <a
             class="nav-link${activeClass}"
             href="${rootPath}${item.path}"${currentAttribute}
+            data-nav-page="${item.page}"
           >
-            ${item.label}
+            ${item.label}${countBadge}
           </a>
         </li>
       `;
@@ -86,6 +98,25 @@ export function initLayout() {
     </header>
   `;
 
+  // Initialize counts after the navigation links exist in the DOM.
+  updateNavigationCounts();
+
+  // A custom event updates this tab; storage covers other browser tabs.
+  if (!countListenersAttached) {
+    window.addEventListener("technest:storage-change", updateNavigationCounts);
+    window.addEventListener("storage", (event) => {
+      if (
+        event.key === "technest-favorites" ||
+        event.key === "technest-cart-v1" ||
+        event.key === null
+      ) {
+        updateNavigationCounts();
+      }
+    });
+    window.addEventListener("pageshow", updateNavigationCounts);
+    countListenersAttached = true;
+  }
+
   // Insert the shared footer into the document.
   footerContainer.innerHTML = `
     <footer class="site-footer">
@@ -94,4 +125,29 @@ export function initLayout() {
       </div>
     </footer>
   `;
+}
+
+// Refresh the Favorites and Cart badges using the stored values.
+export function updateNavigationCounts() {
+  const counts = {
+    favorites: getFavoriteIds().length,
+    cart: getCartItemCount(),
+  };
+
+  for (const [page, count] of Object.entries(counts)) {
+    const badge = document.querySelector(`[data-nav-count="${page}"]`);
+    const link = document.querySelector(`[data-nav-page="${page}"]`);
+
+    if (!badge || !link) continue;
+
+    badge.textContent = String(count);
+    badge.hidden = count === 0;
+
+    const label =
+      page === "favorites"
+        ? `Favorites, ${count} saved ${count === 1 ? "product" : "products"}`
+        : `Cart, ${count} ${count === 1 ? "item" : "items"}`;
+
+    link.setAttribute("aria-label", label);
+  }
 }
