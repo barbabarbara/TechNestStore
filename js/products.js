@@ -83,39 +83,131 @@ function createProductCard(product) {
   return card;
 }
 
-// Load and display products.
+// Find the catalogue controls.
+const searchInput = document.querySelector("#product-search");
+const categoryFilter = document.querySelector("#category-filter");
+const brandFilter = document.querySelector("#brand-filter");
+const sortSelect = document.querySelector("#sort-select");
+const clearFiltersButton = document.querySelector("#clear-filters");
+
+// Keep the original API products in memory.
+let allProducts = [];
+
+// Fill the brand menu with brands that actually exist in the API results.
+function populateBrandFilter(products) {
+  const brands = [
+    ...new Set(products.map((product) => product.brand || "Unknown brand")),
+  ];
+  brands.sort((a, b) => a.localeCompare(b));
+
+  for (const brand of brands) {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    brandFilter.append(option);
+  }
+}
+
+// Apply all current controls, then redraw the catalogue.
+function updateCatalogue() {
+  const searchQuery = searchInput.value.trim().toLowerCase();
+  const selectedCategory = categoryFilter.value;
+  const selectedBrand = brandFilter.value;
+  const sortOrder = sortSelect.value;
+
+  // filter() returns a new array without changing allProducts.
+  const visibleProducts = allProducts.filter((product) => {
+    const searchableText = [
+      product.title,
+      product.brand || "Unknown brand",
+      product.category.replaceAll("-", " "),
+      product.description || "",
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = searchableText.includes(searchQuery);
+    const matchesCategory =
+      selectedCategory === "" || product.category === selectedCategory;
+    const matchesBrand =
+      selectedBrand === "" ||
+      (product.brand || "Unknown brand") === selectedBrand;
+
+    return matchesSearch && matchesCategory && matchesBrand;
+  });
+
+  // sort() modifies visibleProducts, not the original allProducts array.
+  if (sortOrder === "name-asc") {
+    visibleProducts.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortOrder === "price-asc") {
+    visibleProducts.sort((a, b) => a.price - b.price);
+  } else if (sortOrder === "price-desc") {
+    visibleProducts.sort((a, b) => b.price - a.price);
+  }
+
+  // Build the new cards off-screen, then update the DOM once.
+  const fragment = document.createDocumentFragment();
+  for (const product of visibleProducts) {
+    fragment.append(createProductCard(product));
+  }
+  productList.replaceChildren(fragment);
+
+  // Show either the count or a helpful empty-results message.
+  statusMessage.textContent =
+    visibleProducts.length === 0
+      ? "No products match your search or filters."
+      : `Showing ${visibleProducts.length} of ${allProducts.length} products.`;
+}
+
+// Clear all choices and display the original catalogue again.
+function clearFilters() {
+  searchInput.value = "";
+  categoryFilter.value = "";
+  brandFilter.value = "";
+  sortSelect.value = "default";
+  updateCatalogue();
+}
+
+// Register listeners once. The controls start disabled until data loads.
+searchInput.addEventListener("input", updateCatalogue);
+categoryFilter.addEventListener("change", updateCatalogue);
+brandFilter.addEventListener("change", updateCatalogue);
+sortSelect.addEventListener("change", updateCatalogue);
+clearFiltersButton.addEventListener("click", clearFilters);
+
+// Fetch products only once, then allow users to filter locally.
 async function loadProducts() {
-  // Initial loading state.
   statusMessage.textContent = "Loading products...";
   productList.replaceChildren();
 
   try {
-    // Fetch all four electronics categories.
-    const products = await getElectronicsProducts();
+    allProducts = await getElectronicsProducts();
 
-    // Handle an empty result.
-    if (products.length === 0) {
+    if (allProducts.length === 0) {
       statusMessage.textContent = "No products available.";
       return;
     }
 
-    // Create and display every product card.
-    for (const product of products) {
-      const card = createProductCard(product);
-      productList.append(card);
+    populateBrandFilter(allProducts);
+
+    // Enable the controls only after a successful API request.
+    for (const control of [
+      searchInput,
+      categoryFilter,
+      brandFilter,
+      sortSelect,
+      clearFiltersButton,
+    ]) {
+      control.disabled = false;
     }
 
-    // Show the number of loaded products.
-    statusMessage.textContent = `${products.length} products loaded.`;
+    updateCatalogue();
   } catch (error) {
-    // Log the technical error for developers.
     console.error("Could not load products:", error);
-
-    // Show a helpful message to visitors.
     statusMessage.textContent =
       "Unable to load products. Please refresh the page.";
   }
 }
 
-// Start loading products when the page module runs.
+// Start loading when the page module runs.
 loadProducts();

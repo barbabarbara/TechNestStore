@@ -42,7 +42,49 @@
                 and mobile accessories.
             </p>
 
-            <!-- Loading, success, and error messages -->
+            <!-- Catalogue controls: search, filters, and sorting. -->
+            <div class="catalogue-toolbar">
+                <div class="catalogue-control catalogue-search">
+                    <label for="product-search">Search products</label>
+                    <input id="product-search" type="search" placeholder="Search products..." autocomplete="off"
+                        disabled />
+                </div>
+
+                <div class="catalogue-control">
+                    <label for="category-filter">Category</label>
+                    <select id="category-filter" disabled>
+                        <option value="">All categories</option>
+                        <option value="smartphones">Smartphones</option>
+                        <option value="laptops">Laptops</option>
+                        <option value="tablets">Tablets</option>
+                        <option value="mobile-accessories">Mobile accessories</option>
+                    </select>
+                </div>
+
+                <div class="catalogue-control">
+                    <label for="brand-filter">Brand</label>
+                    <select id="brand-filter" disabled>
+                        <option value="">All brands</option>
+                        <!-- JavaScript adds brands from the API here. -->
+                    </select>
+                </div>
+
+                <div class="catalogue-control">
+                    <label for="sort-select">Sort by</label>
+                    <select id="sort-select" disabled>
+                        <option value="default">Default order</option>
+                        <option value="name-asc">Name: A to Z</option>
+                        <option value="price-asc">Price: Low to high</option>
+                        <option value="price-desc">Price: High to low</option>
+                    </select>
+                </div>
+
+                <button id="clear-filters" class="catalogue-reset" type="button" disabled>
+                    Clear filters
+                </button>
+            </div>
+
+            <!-- Loading, result count, and error messages. -->
             <p id="catalogue-status" role="status">
                 Loading products...
             </p>

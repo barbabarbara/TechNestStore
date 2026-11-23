@@ -14,7 +14,7 @@
 - [X] **3. Connect the DummyJSON API**
   - `fetch()`, promises, `async`/`await`, arrays, objects, and error handling.
 
-- [ ] **4. Build the product catalogue**
+- [X] **4. Build the product catalogue**
   - Product cards, `.map()`, search, filtering, sorting, and event listeners.
 
 - [ ] **5. Build the product details page**
@@ -33,7 +33,7 @@
 
 ## Current Focus
 
-**Step 1 — Build the homepage**
+**5. Build the product details page**
 
 ## How to Use This Roadmap
 

@@ -262,6 +262,87 @@ main.shell > section > p {
 
 /* 8. Product catalogue -------------------------------------------- */
 
+/* Controls for searching, filtering, and sorting products. */
+.catalogue-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr)) auto;
+  align-items: end;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cloud);
+}
+
+.catalogue-control {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 7px;
+}
+
+.catalogue-control label {
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.catalogue-control input,
+.catalogue-control select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.catalogue-control input::placeholder {
+  color: var(--muted);
+}
+
+.catalogue-reset {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--blue);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.catalogue-reset:hover:not(:disabled) {
+  background: #eef1fc;
+}
+
+.catalogue-control :disabled,
+.catalogue-reset:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Keep filters usable on smaller screens. */
+@media (max-width: 1050px) {
+  .catalogue-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .catalogue-toolbar {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+}
+
 /* Responsive grid containing all product cards. */
 .product-grid {
   display: grid;
