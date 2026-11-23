@@ -11,7 +11,7 @@
 - [X] **2. Create reusable navigation**
   - JavaScript functions, modules, `import`, `export`, `initLayout()`, and DOM manipulation.
 
-- [ ] **3. Connect the DummyJSON API**
+- [X] **3. Connect the DummyJSON API**
   - `fetch()`, promises, `async`/`await`, arrays, objects, and error handling.
 
 - [ ] **4. Build the product catalogue**

@@ -2,28 +2,65 @@
 <html lang="en">
 
 <head>
+    <!-- Character encoding -->
     <meta charset="UTF-8" />
+
+    <!-- Responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Page description -->
+    <meta name="description" content="Explore smartphones, laptops, tablets,
+      and mobile accessories at TechNest." />
+
+    <!-- Browser tab title -->
     <title>Catalogue | TechNest</title>
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="../css/style.css" />
 </head>
 
+<!-- Current page configuration -->
+
 <body data-page="products" data-root="../">
+    <!-- Skip navigation -->
     <a class="skip-link" href="#main">
         Skip to main content
     </a>
 
+    <!-- Shared header -->
     <div id="site-header"></div>
 
+    <!-- Main content -->
     <main id="main" class="shell">
-        <h1>Product catalogue</h1>
-        <p>Explore our electronics collection.</p>
+        <section aria-labelledby="catalogue-heading">
+            <h1 id="catalogue-heading">
+                Product catalogue
+            </h1>
+
+            <p>
+                Explore smartphones, laptops, tablets,
+                and mobile accessories.
+            </p>
+
+            <!-- Loading, success, and error messages -->
+            <p id="catalogue-status" role="status">
+                Loading products...
+            </p>
+
+            <!-- JavaScript inserts the products here -->
+            <ul id="product-list" class="product-grid"></ul>
+
+            <noscript>
+                Enable JavaScript to view the product catalogue.
+            </noscript>
+        </section>
     </main>
 
+    <!-- Shared footer -->
     <div id="site-footer"></div>
 
-    <script type="module" src="../js/layout.js"></script>
+    <!-- Catalogue JavaScript module -->
+    <script type="module" src="../js/products.js"></script>
 </body>
 
 </html>
