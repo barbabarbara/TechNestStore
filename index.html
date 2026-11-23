@@ -1,54 +1,106 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Character encoding -->
     <meta charset="UTF-8" />
+
+    <!-- Responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Page description -->
+    <meta
+      name="description"
+      content="Explore smartphones, laptops, tablets,
+      and accessories at TechNest."
+    />
+
+    <!-- Browser tab title -->
     <title>TechNest | Home</title>
 
+    <!-- External CSS -->
     <link rel="stylesheet" href="./css/style.css" />
   </head>
 
   <body>
-    <!-- Website navigation -->
-    <header class="site-header">
-      <div class="container">
-        <a href="./index.html" class="logo"> TechNest </a>
+    <!-- Accessibility: skip navigation -->
+    <a class="skip-link" href="#main"> Skip to main content </a>
 
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="logo" href="./index.html">
+          TechNest<span class="brand-dot">.</span>
+        </a>
+
+        <!-- Main navigation -->
         <nav aria-label="Main navigation">
-          <a href="./index.html" aria-current="page"> Home </a>
-          <a href="#categories">Categories</a>
+          <ul class="nav-list">
+            <li>
+              <a href="./index.html" aria-current="page"> Home </a>
+            </li>
+
+            <li>
+              <a href="#categories"> Categories </a>
+            </li>
+          </ul>
         </nav>
       </div>
     </header>
 
-    <!-- Main page content -->
-    <main>
+    <!-- Main content -->
+    <main id="main">
+      <!-- Hero section -->
       <section class="hero container">
+        <p class="eyebrow">Welcome to TechNest</p>
+
         <h1>Everyday tech, made simple.</h1>
 
-        <p>Discover smartphones, laptops, tablets, and accessories.</p>
+        <p class="hero-description">
+          Discover smartphones, laptops, tablets, and mobile accessories.
+        </p>
 
-        <button id="browse-button" type="button">Browse categories</button>
+        <!-- Navigation link -->
+        <a class="primary-link" href="#categories"> Browse categories </a>
+
+        <!-- Interactive button -->
+        <button
+          id="information-button"
+          class="secondary-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="store-information"
+        >
+          Show store information
+        </button>
+
+        <!-- Initially hidden content -->
+        <p id="store-information" class="store-information" hidden>
+          TechNest is an educational electronics store built with HTML, CSS, and
+          JavaScript.
+        </p>
       </section>
 
-      <!-- Product categories -->
-      <section id="categories" class="container">
+      <!-- Categories -->
+      <section id="categories" class="categories container">
         <h2>Shop by category</h2>
 
-        <div class="category-grid">
-          <article>Smartphones</article>
-          <article>Laptops</article>
-          <article>Tablets</article>
-          <article>Mobile accessories</article>
-        </div>
+        <ul class="category-grid">
+          <li>Smartphones</li>
+          <li>Laptops</li>
+          <li>Tablets</li>
+          <li>Mobile accessories</li>
+        </ul>
       </section>
     </main>
 
+    <!-- Footer -->
     <footer class="site-footer">
-      <p>© 2026 TechNest — Student project</p>
+      <div class="container">
+        <p>© 2026 TechNest — Student project</p>
+      </div>
     </footer>
 
+    <!-- External JavaScript -->
     <script type="module" src="./js/main.js"></script>
   </body>
 </html>

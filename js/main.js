@@ -1,18 +1,34 @@
 
-"use strict";
+// 1. Select the button from the HTML.
+const informationButton = document.querySelector(
+  "#information-button",
+);
 
-// 1. Find the button in HTML.
-const browseButton = document.querySelector("#browse-button");
+// 2. Select the paragraph containing store information.
+const storeInformation = document.querySelector(
+  "#store-information",
+);
 
-// 2. Find the category section.
-const categorySection = document.querySelector("#categories");
+// 3. Listen for a click on the button, and run a function when it happens.
+informationButton.addEventListener("click", () => {
+  // 4. Find out whether the information is visible.
+  const isExpanded =
+    informationButton.getAttribute("aria-expanded") === "true";
 
-// 3. Listen for a click on the button.
-browseButton.addEventListener("click", function () {
+  // 5. Reverse the current state, so if it was true, it becomes false, and vice versa.
+  const newState = !isExpanded;
 
-  // 4. Scroll to the category section.
-  categorySection.scrollIntoView({
-    behavior: "smooth"
-  });
+  // 6. Update the accessibility attribute, so screen readers know whether the information is visible.
+  informationButton.setAttribute(
+    "aria-expanded",
+    String(newState),
+  );
 
+  // 7. Show or hide the paragraph, depending on the new state.
+  storeInformation.hidden = !newState;
+
+  // 8. Change the button text.
+  informationButton.textContent = newState
+    ? "Hide store information"
+    : "Show store information";
 });
