@@ -47,3 +47,35 @@ export async function getElectronicsProducts() {
   // Combine the four arrays into one product array.
   return productGroups.flat();
 }
+
+/* --- Fetch one product by ID --- */
+
+export async function getProductById(id) {
+  // Validate the product ID before making a request.
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error("Invalid product ID.");
+  }
+
+  // Request the selected product from DummyJSON.
+  const response = await fetch(`${API_BASE_URL}/${id}`);
+
+  // Check whether the request succeeded.
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error("Product not found.");
+    }
+
+    throw new Error(`Failed to load product: HTTP ${response.status}`);
+  }
+
+  // Convert the JSON response into a JavaScript object.
+  const product = await response.json();
+
+  // Check that the returned object has the expected ID.
+  if (!product || product.id !== id) {
+    throw new Error("Invalid product data received.");
+  }
+
+  // Return the selected product to the calling function.
+  return product;
+}

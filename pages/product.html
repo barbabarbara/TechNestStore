@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="description" content="Explore product details at TechNest." />
+
+    <title>Product Details | TechNest</title>
+
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body data-page="products" data-root="../">
+    <!-- Skip navigation -->
+    <a class="skip-link" href="#main">
+        Skip to main content
+    </a>
+
+    <!-- Shared header -->
+    <div id="site-header"></div>
+
+    <main id="main" class="shell">
+        <!-- Navigation back to the catalogue -->
+        <a href="./products.html">
+            ← Back to catalogue
+        </a>
+
+        <section aria-labelledby="product-heading">
+            <h1 id="product-heading">Product details</h1>
+
+            <!-- Status and error messages -->
+            <p id="product-status" role="status">
+                Reading product information...
+            </p>
+
+            <!-- Product information will go here -->
+            <div id="product-details"></div>
+        </section>
+    </main>
+
+    <!-- Shared footer -->
+    <div id="site-footer"></div>
+
+    <script type="module" src="../js/product.js"></script>
+</body>
+
+</html>

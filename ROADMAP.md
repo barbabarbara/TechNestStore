@@ -17,7 +17,7 @@
 - [X] **4. Build the product catalogue**
   - Product cards, `.map()`, search, filtering, sorting, and event listeners.
 
-- [ ] **5. Build the product details page**
+- [X] **5. Build the product details page**
   - URL parameters, `URLSearchParams`, and individual product requests.
 
 - [ ] **6. Implement favorites and shopping cart**
@@ -33,7 +33,7 @@
 
 ## Current Focus
 
-**5. Build the product details page**
+**6. Implement favorites and shopping cart**
 
 ## How to Use This Roadmap
 

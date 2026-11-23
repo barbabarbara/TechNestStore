@@ -35,11 +35,28 @@ function createProductCard(product) {
   // 3. Create the product image.
   const image = document.createElement("img");
   image.className = "product-card-image";
-  image.src = product.thumbnail;
+  image.src =
+    product.category === "smartphones"
+      ? product.images?.[2] || product.images?.[0] || product.thumbnail
+      : product.thumbnail;
   image.alt = product.title;
   image.loading = "lazy";
   image.width = 320;
   image.height = 240;
+
+  // Create the URL for this product.
+  const productUrl = `./product.html?id=${product.id}`;
+
+  // Create a link for the product image.
+  const imageLink = document.createElement("a");
+
+  imageLink.className = "product-card-image-link";
+  imageLink.href = productUrl;
+
+  imageLink.setAttribute("aria-label", `View details for ${product.title}`);
+
+  // Place the image inside the link.
+  imageLink.append(image);
 
   // 4. Create the category label.
   const category = document.createElement("span");
@@ -47,7 +64,7 @@ function createProductCard(product) {
   category.textContent = product.category.replaceAll("-", " ");
 
   // 5. Put the image and category in the media container.
-  media.append(image, category);
+  media.append(imageLink, category);
 
   // 6. Create the product information container.
   const content = document.createElement("div");
@@ -59,9 +76,20 @@ function createProductCard(product) {
   brand.textContent = product.brand || "Unknown brand";
 
   // 8. Create the product title.
+
+  // Create the product heading.
   const title = document.createElement("h2");
   title.className = "product-card-title";
-  title.textContent = product.title;
+
+  // Create a link inside the heading.
+  const titleLink = document.createElement("a");
+
+  titleLink.className = "product-card-title-link";
+  titleLink.href = productUrl;
+  titleLink.textContent = product.title;
+
+  // Add the link to the heading.
+  title.append(titleLink);
 
   // 8.1. Create the product description.
   const description = document.createElement("p");
