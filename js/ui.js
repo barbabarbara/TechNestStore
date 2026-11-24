@@ -99,12 +99,21 @@ export function initLayout() {
   headerContainer.innerHTML = `
     <header class="site-header">
       <div class="shell header-inner">
+  
         <a
           class="brand"
           href="${rootPath}index.html"
           aria-label="TechNest home"
         >
-          TechNest<span class="brand-dot" aria-hidden="true">.</span>
+          <img
+            class="brand-icon"
+            src="${rootPath}assets/icons/technest-icon.png"
+            alt=""
+          />
+
+          <span class="brand-name">
+            TechNest<span class="brand-dot" aria-hidden="true">.</span>
+          </span>
         </a>
 
         <button class="menu-toggle" type="button" id="menu-toggle"

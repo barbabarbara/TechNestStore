@@ -92,6 +92,9 @@ img {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   color: var(--ink);
   font-size: 1.5rem;
   font-weight: 700;
@@ -99,6 +102,14 @@ img {
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.brand-icon {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-dot {
