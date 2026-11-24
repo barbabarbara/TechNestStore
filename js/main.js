@@ -27,8 +27,9 @@ if (informationButton && storeInformation) {
     storeInformation.hidden = !newState;
 
     // Update the button label.
+    // Update the button label.
     informationButton.textContent = newState
-      ? "Hide store information"
+      ? "Close information"
       : "About TechNest";
   });
 }

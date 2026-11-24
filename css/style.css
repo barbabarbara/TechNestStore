@@ -1146,8 +1146,12 @@ main.shell > section > .purchase-success {
   width: 100%;
   max-width: 420px;
 }
-.order-history { margin-block: 24px; }
-.order-history h2 { margin: 0 0 16px; }
+.order-history {
+  margin-block: 24px;
+}
+.order-history h2 {
+  margin: 0 0 16px;
+}
 .order-history-header {
   display: flex;
   align-items: baseline;
@@ -1156,7 +1160,9 @@ main.shell > section > .purchase-success {
   gap: 12px;
   margin-bottom: 16px;
 }
-.order-history-header h2 { margin: 0; }
+.order-history-header h2 {
+  margin: 0;
+}
 .order-receipt {
   margin-bottom: 12px;
   padding: clamp(16px, 3vw, 28px);
@@ -1164,10 +1170,23 @@ main.shell > section > .purchase-success {
   border-radius: var(--radius);
   background: #fff;
 }
-.order-receipt summary { cursor: pointer; font-weight: 700; overflow-wrap: anywhere; }
-.receipt-date { margin: 8px 0; color: var(--muted); font-size: 0.875rem; }
-.receipt-items { list-style: none; padding: 0; margin: 16px 0; }
-.receipt-items li, .receipt-total {
+.order-receipt summary {
+  cursor: pointer;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.receipt-date {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.receipt-items {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+.receipt-items li,
+.receipt-total {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -1175,9 +1194,18 @@ main.shell > section > .purchase-success {
   padding-block: 12px;
   border-top: 1px solid var(--line);
 }
-.receipt-items li > div { min-width: 0; overflow-wrap: anywhere; }
-.receipt-items li > strong, .receipt-total strong { flex-shrink: 0; }
-.receipt-total { font-size: 1.05rem; font-weight: 600; }
+.receipt-items li > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.receipt-items li > strong,
+.receipt-total strong {
+  flex-shrink: 0;
+}
+.receipt-total {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 
 .secondary-cart-link {
   color: var(--blue);
@@ -1758,6 +1786,27 @@ main.shell .admin-intro h1 {
   background: rgb(255 255 255 / 85%);
   color: #525d6b;
   font-size: 0.9rem;
+}
+
+.home-information h2 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.home-information p {
+  margin: 0 0 12px;
+  line-height: 1.65;
+}
+
+.home-information .home-information-note {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .home-proof {
