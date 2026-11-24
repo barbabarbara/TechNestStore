@@ -1,7 +1,5 @@
-/* ==========================================================
-   TechNestStore | Favorites page (Lesson 6, Step 2)
-   Read saved IDs, fetch product details, render reusable cards.
-   ========================================================== */
+/* 
+   TechNestStore | Favorites page  */
 import { initLayout } from "./ui.js";
 import { getProductById } from "./api.js";
 import { getFavoriteIds } from "./storage.js";
@@ -83,8 +81,11 @@ async function loadFavorites() {
 loadFavorites();
 
 window.addEventListener("storage", (event) => {
-  if (event.key === "technest-favorites" ||
-      event.key === "technest-admin-overrides-v1" || event.key === null) {
+  if (
+    event.key === "technest-favorites" ||
+    event.key === "technest-admin-overrides-v1" ||
+    event.key === null
+  ) {
     loadFavorites();
   }
 });
