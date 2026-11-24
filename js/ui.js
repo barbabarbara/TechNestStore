@@ -32,8 +32,26 @@ const navigationItems = [
 // Register window listeners only once, even if initLayout runs again.
 let countListenersAttached = false;
 
+// Initialize the favicon for all pages.
+function initFavicon() {
+  // Prevent duplicate favicon elements.
+  if (document.querySelector('link[rel="icon"]')) {
+    return;
+  }
+
+  const favicon = document.createElement("link");
+
+  favicon.rel = "icon";
+  favicon.type = "image/x-icon";
+  favicon.href = new URL("../assets/icons/favicon.ico", import.meta.url).href;
+
+  document.head.appendChild(favicon);
+}
+
 // Export the function for use on other pages.
 export function initLayout() {
+  // Initialize the shared favicon.
+  initFavicon();
   // Find the placeholders in the HTML.
   const headerContainer = document.querySelector("#site-header");
   const footerContainer = document.querySelector("#site-footer");
