@@ -2220,6 +2220,13 @@ main.shell .admin-intro h1 {
   background: currentColor;
   border-radius: 2px;
 }
+
+/* Hide fallback navigation when JavaScript is enabled. */
+@media (scripting: enabled) {
+  noscript {
+    display: none;
+  }
+}
 @media (max-width: 780px) {
   .site-header {
     position: relative;

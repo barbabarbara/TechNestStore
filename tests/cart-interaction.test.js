@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { installBrowserMocks } from "./helpers/browser-mock.js";
+import { installBrowserMocks, withDocumentHead } from "./helpers/browser-mock.js";
 
 installBrowserMocks();
 
@@ -96,7 +96,7 @@ for (const id of [
   elements.set(`#${id}`, new Element());
 }
 
-globalThis.document = {
+globalThis.document = withDocumentHead({
   body: { dataset: { root: "../", page: "cart" } },
   activeElement: null,
   querySelector(selector) {
@@ -108,7 +108,7 @@ globalThis.document = {
   createDocumentFragment() {
     return new Element("fragment");
   },
-};
+});
 
 // Product 999 deliberately fails to load. It must not disappear from the cart.
 const knownProducts = new Map([

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { installBrowserMocks } from "./helpers/browser-mock.js";
+import { installBrowserMocks, withDocumentHead } from "./helpers/browser-mock.js";
 
 const browser = installBrowserMocks();
 const nav = new Map();
@@ -19,14 +19,14 @@ for (const page of ["favorites", "cart"]) {
   nav.set(`[data-nav-count="${page}"]`, element());
   nav.set(`[data-nav-page="${page}"]`, element());
 }
-globalThis.document = {
+globalThis.document = withDocumentHead({
   body: { dataset: { root: "./", page: "home" } },
   querySelector(selector) {
     if (selector === "#site-header") return placeholderHeader;
     if (selector === "#site-footer") return placeholderFooter;
     return nav.get(selector) ?? null;
   },
-};
+});
 const storage = await import("../js/storage.js");
 const ui = await import("../js/ui.js");
 
@@ -75,4 +75,23 @@ test("changes in another browser tab refresh the counts", () => {
   browser.entries.set("technest-favorites", "[12,13]");
   window.dispatchEvent({ type: "storage", key: "technest-favorites" });
   assert.equal(badge("favorites").textContent, "2");
+});
+
+
+test("shared layout initializes the favicon with the correct module-relative URL", () => {
+  ui.initLayout();
+  const favicon = document.querySelector('link[rel="icon"]');
+  assert.ok(favicon);
+  assert.equal(favicon.tagName, "LINK");
+  assert.equal(favicon.type, "image/x-icon");
+  assert.equal(favicon.href, new URL("../assets/icons/favicon.ico", import.meta.url).href);
+});
+
+test("repeated layout initialization does not duplicate the favicon", () => {
+  ui.initLayout();
+  const favicon = document.querySelector('link[rel="icon"]');
+  ui.initLayout();
+  ui.initLayout();
+  assert.equal(document.head.children.filter((element) => element.rel === "icon").length, 1);
+  assert.equal(document.querySelector('link[rel="icon"]'), favicon);
 });

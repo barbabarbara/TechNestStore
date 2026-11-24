@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { installBrowserMocks, installElementMock } from "./helpers/browser-mock.js";
+import { installBrowserMocks, installElementMock, withDocumentHead } from "./helpers/browser-mock.js";
 
 installBrowserMocks();
 installElementMock();
@@ -47,12 +47,12 @@ elements.get("#category-filter").options = categories.map((value) => ({ value })
 elements.get("#brand-filter").options = [{ value: "" }];
 elements.get("#sort-select").value = "default";
 
-globalThis.document = {
+globalThis.document = withDocumentHead({
   body: { dataset: { root: "../", page: "products" } },
   querySelector(selector) { return elements.get(selector) ?? null; },
   createElement(tag) { return new Element(tag); },
   createDocumentFragment() { return new Element("fragment"); },
-};
+});
 window.location = { search: "?category=tablets" };
 
 const samples = {

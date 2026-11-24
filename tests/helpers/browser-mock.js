@@ -83,3 +83,31 @@ export function installElementMock() {
     },
   };
 }
+
+/** Add the document head and link lookup used by shared favicon initialization. */
+export function withDocumentHead(documentMock) {
+  const head = {
+    children: [],
+    appendChild(element) {
+      this.children.push(element);
+      return element;
+    },
+  };
+  const querySelector = documentMock.querySelector.bind(documentMock);
+
+  return {
+    ...documentMock,
+    head,
+    createElement: documentMock.createElement ?? ((tagName) => ({
+      tagName: tagName.toUpperCase(),
+    })),
+    querySelector(selector) {
+      if (selector === 'link[rel="icon"]') {
+        return head.children.find(
+          (element) => element.tagName === "LINK" && element.rel === "icon",
+        ) ?? null;
+      }
+      return querySelector(selector);
+    },
+  };
+}
