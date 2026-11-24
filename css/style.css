@@ -1119,10 +1119,36 @@ main.shell > section > .action-status,
   color: var(--muted);
   font-size: 0.85rem;
 }
+
+.checkout-button {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+}
+/* Successful purchase confirmation */
+main.shell > section > .purchase-success {
+  margin: 24px 0;
+  padding: 24px;
+  border: 1px solid #b7dfc5;
+  border-radius: var(--radius);
+  background: #edf8f0;
+  color: #246b43;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Order summary after a successful purchase */
+#cart-list[hidden] + .cart-summary {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 420px;
+}
+
 .secondary-cart-link {
   color: var(--blue);
   font-weight: 600;
 }
+
 .secondary-cart-link:hover {
   color: var(--blue-hover);
 }

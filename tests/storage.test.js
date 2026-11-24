@@ -109,3 +109,18 @@ test("saving data dispatches an event for the current browser tab", () => {
     "technest:storage-change",
   ]);
 });
+
+
+test("clearCart empties only the cart and notifies navigation listeners", () => {
+  reset();
+  storage.toggleFavorite(121);
+  storage.addToCart(121, 2);
+  localStorage.setItem("unrelated-setting", "keep-me");
+  const before = browser.events.length;
+  storage.clearCart();
+  assert.deepEqual(storage.getCartItems(), []);
+  assert.equal(storage.getCartItemCount(), 0);
+  assert.deepEqual(storage.getFavoriteIds(), [121]);
+  assert.equal(localStorage.getItem("unrelated-setting"), "keep-me");
+  assert.deepEqual(browser.events.slice(before), ["technest:storage-change"]);
+});

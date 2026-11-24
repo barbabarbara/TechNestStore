@@ -123,3 +123,8 @@ export function clearShoppingData() {
 
   window.dispatchEvent(new Event("technest:storage-change"));
 }
+
+// Complete a simulated purchase without removing saved favorites.
+export function clearCart() {
+  saveArray(CART_KEY, []);
+}

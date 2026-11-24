@@ -6,6 +6,7 @@ import {
   getCartItems,
   getCartItemCount,
   setCartQuantity,
+  clearCart,
   MAX_CART_QUANTITY,
 } from "./storage.js";
 
@@ -17,6 +18,7 @@ const empty = document.querySelector("#cart-empty");
 const summary = document.querySelector("#cart-summary");
 const count = document.querySelector("#cart-count");
 const totalElement = document.querySelector("#cart-subtotal");
+const checkoutButton = document.querySelector("#checkout-button");
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -37,6 +39,9 @@ function updateCartSummary() {
   const quantity = getCartItemCount();
   count.textContent = String(quantity);
   totalElement.textContent = money.format(subtotal);
+  checkoutButton.disabled =
+    entries.length === 0 ||
+    entries.some((entry) => !findLoadedProduct(entry.id));
   summary.hidden = entries.length === 0;
   empty.hidden = entries.length !== 0;
   status.textContent =
@@ -181,7 +186,8 @@ function createUnavailableCartRow({ id, quantity }) {
   title.textContent = `Unavailable product #${id}`;
   const explanation = document.createElement("p");
   explanation.className = "cart-item-unit-price";
-  explanation.textContent = "Could not load this product; price excluded from subtotal.";
+  explanation.textContent =
+    "Could not load this product; price excluded from subtotal.";
   info.append(title, explanation);
 
   const controls = document.createElement("div");
@@ -192,7 +198,10 @@ function createUnavailableCartRow({ id, quantity }) {
   remove.type = "button";
   remove.className = "cart-remove";
   remove.textContent = "Remove";
-  remove.setAttribute("aria-label", `Remove unavailable product ${id} from cart`);
+  remove.setAttribute(
+    "aria-label",
+    `Remove unavailable product ${id} from cart`,
+  );
   remove.addEventListener("click", () => {
     changeQuantity(id, 0, row, () => {});
   });
@@ -242,4 +251,47 @@ async function loadCart() {
   }
 }
 
+// Simulate a successful purchase; no payment or API order is submitted.
+// Simulate a successful purchase.
+function checkout() {
+  const entries = getCartItems();
+
+  if (
+    entries.length === 0 ||
+    entries.some((entry) => !findLoadedProduct(entry.id))
+  ) {
+    return;
+  }
+
+  try {
+    clearCart();
+  } catch (error) {
+    showStorageError(error);
+    return;
+  }
+
+  loadedProducts = [];
+  renderCart();
+
+  // Hide unnecessary elements after a successful purchase.
+  empty.hidden = true;
+  list.hidden = true;
+  status.hidden = true;
+  checkoutButton.hidden = true;
+
+  // Keep the reset order summary visible.
+  summary.hidden = false;
+
+  // Display a clear purchase confirmation.
+  actionStatus.classList.add("purchase-success");
+
+  actionStatus.textContent =
+    "Thank you for your purchase! Your simulated order has been completed successfully.";
+
+  actionStatus.tabIndex = -1;
+  actionStatus.focus({ preventScroll: true });
+}
+
+checkoutButton.disabled = true;
+checkoutButton.addEventListener("click", checkout);
 loadCart();

@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { installBrowserMocks, withDocumentHead } from "./helpers/browser-mock.js";
+import {
+  installBrowserMocks,
+  withDocumentHead,
+} from "./helpers/browser-mock.js";
 
-installBrowserMocks();
+const browser = installBrowserMocks();
 
 class Element {
   constructor(tagName = "div") {
@@ -15,6 +18,14 @@ class Element {
     this.hidden = false;
     this.disabled = false;
     this.dataset = {};
+
+    // Simulate the browser's classList functionality.
+    const classes = new Set();
+
+    this.classList = {
+      add: (...names) => names.forEach((name) => classes.add(name)),
+      contains: (name) => classes.has(name),
+    };
   }
 
   append(...children) {
@@ -92,9 +103,15 @@ for (const id of [
   "cart-summary",
   "cart-count",
   "cart-subtotal",
+  "checkout-button",
 ]) {
   elements.set(`#${id}`, new Element());
 }
+
+const navCartBadge = new Element("span");
+const navCartLink = new Element("a");
+elements.set('[data-nav-count="cart"]', navCartBadge);
+elements.set('[data-nav-page="cart"]', navCartLink);
 
 globalThis.document = withDocumentHead({
   body: { dataset: { root: "../", page: "cart" } },
@@ -133,7 +150,13 @@ localStorage.setItem(
   ]),
 );
 
-const { getCartItemCount, getCartItems } = await import("../js/storage.js");
+const {
+  getCartItemCount,
+  getCartItems,
+  addToCart,
+  toggleFavorite,
+  getFavoriteIds,
+} = await import("../js/storage.js");
 await import("../js/cart.js");
 await new Promise((resolve) => setImmediate(resolve));
 
@@ -156,6 +179,12 @@ test("unavailable products stay visible and Cart count matches stored quantities
     get("cart-action-status").textContent,
     /excluded from the subtotal/,
   );
+});
+
+test("checkout is disabled when a product price is unavailable", () => {
+  assert.equal(get("checkout-button").disabled, true);
+  get("checkout-button").click();
+  assert.equal(getCartItemCount(), 6);
 });
 
 test("incrementing quantity retains the exact DOM row and keyboard focus", () => {
@@ -198,6 +227,7 @@ test("removing unavailable items updates count without deleting other products",
   assert.deepEqual(getCartItems(), [{ id: 121, quantity: 3 }]);
   assert.equal(get("cart-count").textContent, "3");
   assert.equal(get("cart-subtotal").textContent, "$599.97");
+  assert.equal(get("checkout-button").disabled, false);
 });
 
 test("removing the last item focuses status and shows empty cart", () => {
@@ -209,4 +239,61 @@ test("removing the last item focuses status and shows empty cart", () => {
   assert.equal(get("cart-empty").hidden, false);
   assert.equal(get("cart-summary").hidden, true);
   assert.equal(document.activeElement, get("cart-status"));
+});
+
+test("checkout preserves cart and reports an error when storage fails", async () => {
+  addToCart(121, 2);
+  addToCart(122, 1);
+  toggleFavorite(121);
+  // Reload the cart module to simulate visiting the page with a new cart.
+  await import("../js/cart.js?checkout");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(get("checkout-button").disabled, false);
+  const originalSetItem = localStorage.setItem;
+  const originalError = console.error;
+  localStorage.setItem = () => {
+    throw new Error("Storage unavailable");
+  };
+  console.error = () => {};
+  try {
+    get("checkout-button").click();
+    assert.equal(getCartItemCount(), 3);
+    assert.equal(rows().length, 2);
+    assert.equal(get("cart-subtotal").textContent, "$899.98");
+    assert.match(get("cart-action-status").textContent, /Unable to save/);
+  } finally {
+    localStorage.setItem = originalSetItem;
+    console.error = originalError;
+  }
+});
+
+test("successful checkout clears cart, resets totals and badge, and preserves favorites", () => {
+  const previousEventCount = browser.events.length;
+  get("checkout-button").click();
+  assert.deepEqual(getCartItems(), []);
+  assert.deepEqual(getFavoriteIds(), [121]);
+  assert.equal(rows().length, 0);
+
+  assert.equal(get("cart-count").textContent, "0");
+  assert.equal(get("cart-subtotal").textContent, "$0.00");
+
+  assert.equal(get("cart-summary").hidden, false);
+  assert.equal(get("cart-empty").hidden, true);
+  assert.equal(get("cart-list").hidden, true);
+  assert.equal(get("cart-status").hidden, true);
+  assert.equal(get("checkout-button").hidden, true);
+  assert.equal(get("checkout-button").disabled, true);
+  assert.equal(navCartBadge.textContent, "0");
+  assert.equal(navCartBadge.hidden, true);
+  assert.match(
+    get("cart-action-status").textContent,
+    /Thank you for your purchase/,
+  );
+  assert.equal(document.activeElement, get("cart-action-status"));
+  assert.deepEqual(browser.events.slice(previousEventCount), [
+    "technest:storage-change",
+  ]);
+  // Repeated clicks cannot create a second purchase.
+  get("checkout-button").click();
+  assert.equal(browser.events.length, previousEventCount + 1);
 });
