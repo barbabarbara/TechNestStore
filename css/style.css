@@ -1,7 +1,8 @@
 /* 1. Design tokens ----------------------------------------- */
 :root {
   --ink: #1d1d1f;
-  --muted: #74777e;
+  /* --muted: #74777e; */
+  --muted: #62666f;
   --blue: #0071e3;
   --blue-hover: #0066cc;
   --cloud: #f5f5f7;
@@ -1693,7 +1694,8 @@ main.shell .admin-intro h1 {
 
 .home-eyebrow {
   margin: 0 0 19px;
-  color: #366cff;
+  /* color: #366cff; */
+  color: #285fe9;
   font-size: 0.73rem;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -1955,7 +1957,8 @@ main.shell .admin-intro h1 {
 .home-section-description {
   max-width: 700px;
   margin: 0;
-  color: #737d8c;
+  /* color: #737d8c; */
+  color: #626b79;
   font-size: 0.98rem;
 }
 
@@ -2547,7 +2550,8 @@ main.shell .admin-intro h1 {
 
 .featured-tagline {
   margin: 0 0 18px;
-  color: #5c6bd2;
+  /* color: #5c6bd2; */
+  color: #4856b8;
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   font-weight: 700;
 }
@@ -2611,7 +2615,8 @@ main.shell .admin-intro h1 {
   width: 9px;
   height: 9px;
   border-radius: 999px;
-  background: #aeb3c2;
+  /* background: #aeb3c2; */
+  background: #777e8c;
 }
 
 .featured-dot[aria-current="true"]::before {
