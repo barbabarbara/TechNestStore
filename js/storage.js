@@ -116,3 +116,10 @@ export function removeFromCart(id) {
     getCartItems().filter((item) => item.id !== id),
   );
 }
+
+export function clearShoppingData() {
+  localStorage.removeItem("technest-favorites");
+  localStorage.removeItem("technest-cart-v1");
+
+  window.dispatchEvent(new Event("technest:storage-change"));
+}

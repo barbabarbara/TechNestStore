@@ -1,6 +1,7 @@
 import { initLayout } from "./ui.js";
 import { getElectronicsProducts } from "./api.js";
 import { createProductCard } from "./product-card.js";
+import { getFavoriteIds } from "./storage.js";
 
 initLayout();
 
@@ -53,7 +54,9 @@ function updateCatalogue() {
   });
 
   if (sortOrder === "name-asc") {
-    visibleProducts.sort((a, b) => a.title.localeCompare(b.title));
+    visibleProducts.sort((a, b) =>
+      String(a.title ?? "").localeCompare(String(b.title ?? "")),
+    );
   } else if (sortOrder === "price-asc") {
     visibleProducts.sort((a, b) => a.price - b.price);
   } else if (sortOrder === "price-desc") {
@@ -61,9 +64,11 @@ function updateCatalogue() {
   }
 
   const fragment = document.createDocumentFragment();
+  const favoriteIds = new Set(getFavoriteIds()); // Read Favorites once per render.
   for (const product of visibleProducts) {
     fragment.append(
       createProductCard(product, {
+        favoriteIds,
         onFavoriteChange(item, saved) {
           actionStatus.textContent = saved
             ? `${item.title} added to favorites.`
@@ -97,11 +102,25 @@ function clearFilters() {
   updateCatalogue();
 }
 
-searchInput.addEventListener("input", updateCatalogue);
-categoryFilter.addEventListener("change", updateCatalogue);
-brandFilter.addEventListener("change", updateCatalogue);
-sortSelect.addEventListener("change", updateCatalogue);
-clearFiltersButton.addEventListener("click", clearFilters);
+// Debounce typing only. Buttons and dropdowns should respond immediately.
+let searchTimer;
+function cancelPendingSearch() {
+  clearTimeout(searchTimer);
+}
+searchInput.addEventListener("input", () => {
+  cancelPendingSearch();
+  searchTimer = setTimeout(updateCatalogue, 180);
+});
+for (const control of [categoryFilter, brandFilter, sortSelect]) {
+  control.addEventListener("change", () => {
+    cancelPendingSearch();
+    updateCatalogue();
+  });
+}
+clearFiltersButton.addEventListener("click", () => {
+  cancelPendingSearch();
+  clearFilters();
+});
 
 async function loadProducts() {
   statusMessage.textContent = "Loading products...";

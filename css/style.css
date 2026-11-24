@@ -2119,3 +2119,16 @@ main.shell .admin-intro h1 {
     transform: none;
   }
 }
+
+/* Accessibility: navigation links remain available when JavaScript is disabled. */
+.nojs-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.nojs-navigation a {
+  color: var(--blue);
+  font-weight: 600;
+}

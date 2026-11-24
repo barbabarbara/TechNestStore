@@ -14,6 +14,7 @@ export function createProductCard(product, options = {}) {
     onFavoriteChange = () => {},
     onCartChange = () => {},
     onError = (error) => console.error(error),
+    favoriteIds = null, // A Set supplied by a page that renders multiple cards.
   } = options;
 
   const card = document.createElement("li");
@@ -26,7 +27,9 @@ export function createProductCard(product, options = {}) {
   const imageLink = document.createElement("a");
   imageLink.className = "product-card-image-link";
   imageLink.href = `./product.html?id=${product.id}`;
-  imageLink.setAttribute("aria-label", `View details for ${product.title}`);
+  // Mouse users may click the image; keyboard users get one link on the title.
+  imageLink.tabIndex = -1;
+  imageLink.setAttribute("aria-hidden", "true");
 
   const image = document.createElement("img");
   image.className = "product-card-image";
@@ -49,8 +52,7 @@ export function createProductCard(product, options = {}) {
   favorite.className = "product-card-favorite";
   favorite.type = "button";
 
-  function updateHeart() {
-    const saved = isFavorite(product.id);
+  function updateHeart(saved) {
     favorite.textContent = saved ? "♥" : "♡";
     favorite.setAttribute("aria-pressed", String(saved));
     favorite.setAttribute(
@@ -62,11 +64,13 @@ export function createProductCard(product, options = {}) {
     favorite.title = saved ? "Remove from favorites" : "Add to favorites";
   }
 
-  updateHeart();
+  updateHeart(favoriteIds instanceof Set
+    ? favoriteIds.has(product.id)
+    : isFavorite(product.id));
   favorite.addEventListener("click", () => {
     try {
       const saved = toggleFavorite(product.id);
-      updateHeart();
+      updateHeart(saved);
       onFavoriteChange(product, saved);
     } catch (error) {
       onError(error);

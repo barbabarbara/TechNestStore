@@ -1,11 +1,11 @@
 /* === TechNestStore | Shopping cart === */
 import { initLayout } from "./ui.js";
 import { getProductById } from "./api.js";
+import { calculateCartSubtotal } from "./cart-utils.js";
 import {
   getCartItems,
   getCartItemCount,
   setCartQuantity,
-  removeFromCart,
   MAX_CART_QUANTITY,
 } from "./storage.js";
 
@@ -23,6 +23,63 @@ const money = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 let loadedProducts = [];
+
+function findLoadedProduct(id) {
+  const product = loadedProducts.find((item) => item?.id === id);
+  return product && Number.isFinite(product.price) ? product : null;
+}
+
+function updateCartSummary() {
+  const entries = getCartItems();
+  const subtotal = calculateCartSubtotal(entries, loadedProducts);
+
+  // The summary and the navigation use the same stored quantities.
+  const quantity = getCartItemCount();
+  count.textContent = String(quantity);
+  totalElement.textContent = money.format(subtotal);
+  summary.hidden = entries.length === 0;
+  empty.hidden = entries.length !== 0;
+  status.textContent =
+    quantity === 0
+      ? "Your cart is empty."
+      : `${quantity} ${quantity === 1 ? "item" : "items"} in your cart.`;
+}
+
+function showStorageError(error) {
+  console.error("Could not update cart:", error);
+  actionStatus.textContent = "Unable to save cart changes in this browser.";
+}
+
+// When an item is removed, keyboard focus must not disappear with its button.
+function focusAfterRemoval(row) {
+  const nextControl = row.nextElementSibling?.querySelector("button");
+  const previousControl = row.previousElementSibling?.querySelector("button");
+  const target = nextControl || previousControl || status;
+  if (target === status) status.tabIndex = -1;
+  return target;
+}
+
+function changeQuantity(id, quantity, row, updateRow) {
+  try {
+    // Write to storage first: failures must not change the visible controls.
+    setCartQuantity(id, quantity);
+
+    if (quantity === 0) {
+      const nextFocus = focusAfterRemoval(row);
+      row.remove();
+      nextFocus.focus({ preventScroll: true });
+      actionStatus.textContent = "Item removed from cart.";
+    } else {
+      // Keep the same DOM row and focused button instead of rebuilding the list.
+      updateRow(quantity);
+      actionStatus.textContent = `Quantity updated to ${quantity}.`;
+    }
+
+    updateCartSummary();
+  } catch (error) {
+    showStorageError(error);
+  }
+}
 
 function createCartRow(product, quantity) {
   const row = document.createElement("li");
@@ -55,18 +112,13 @@ function createCartRow(product, quantity) {
   const controls = document.createElement("div");
   controls.className = "cart-item-controls";
   const quantityLabel = document.createElement("span");
-  quantityLabel.textContent = `Quantity: ${quantity}`;
-
   const counter = document.createElement("div");
   counter.className = "cart-quantity-controls";
+
   const decrement = document.createElement("button");
   decrement.type = "button";
   decrement.textContent = "−";
   decrement.setAttribute("aria-label", `Decrease quantity of ${product.title}`);
-  // A click at quantity 1 removes the product.
-  decrement.addEventListener("click", () =>
-    changeQuantity(product.id, quantity - 1),
-  );
 
   const increment = document.createElement("button");
   increment.type = "button";
@@ -75,82 +127,93 @@ function createCartRow(product, quantity) {
   const maxAllowed = Number.isSafeInteger(product.stock)
     ? Math.min(MAX_CART_QUANTITY, Math.max(0, product.stock))
     : MAX_CART_QUANTITY;
-  increment.disabled = quantity >= maxAllowed;
-  increment.addEventListener("click", () =>
-    changeQuantity(product.id, quantity + 1),
-  );
-  counter.append(decrement, increment);
 
   const remove = document.createElement("button");
   remove.type = "button";
   remove.className = "cart-remove";
   remove.textContent = "Remove";
   remove.setAttribute("aria-label", `Remove ${product.title} from cart`);
-  remove.addEventListener("click", () => {
-    try {
-      removeFromCart(product.id);
-      actionStatus.textContent = `${product.title} removed from cart.`;
-      renderCart();
-    } catch (error) {
-      showStorageError(error);
-    }
-  });
 
   const lineTotal = document.createElement("strong");
   lineTotal.className = "cart-line-total";
-  lineTotal.textContent = money.format(product.price * quantity);
-  controls.append(quantityLabel, counter, remove, lineTotal);
 
+  let currentQuantity = quantity;
+  function updateRow(nextQuantity) {
+    currentQuantity = nextQuantity;
+    quantityLabel.textContent = `Quantity: ${nextQuantity}`;
+    lineTotal.textContent = money.format(product.price * nextQuantity);
+    increment.disabled = nextQuantity >= maxAllowed;
+  }
+
+  decrement.addEventListener("click", () => {
+    changeQuantity(product.id, currentQuantity - 1, row, updateRow);
+  });
+  increment.addEventListener("click", () => {
+    if (!increment.disabled) {
+      changeQuantity(product.id, currentQuantity + 1, row, updateRow);
+    }
+  });
+  remove.addEventListener("click", () => {
+    changeQuantity(product.id, 0, row, updateRow);
+  });
+
+  updateRow(quantity);
+  counter.append(decrement, increment);
+  controls.append(quantityLabel, counter, remove, lineTotal);
   row.append(link, info, controls);
   return row;
 }
 
-function showStorageError(error) {
-  console.error("Could not update cart:", error);
-  actionStatus.textContent = "Unable to save cart changes in this browser.";
-}
+// A network failure or removed product should not silently disappear from Cart.
+// Keep a removable row so the displayed item count agrees with the header.
+function createUnavailableCartRow({ id, quantity }) {
+  const row = document.createElement("li");
+  row.className = "cart-item";
 
-function changeQuantity(id, quantity) {
-  try {
-    setCartQuantity(id, quantity);
-    actionStatus.textContent =
-      quantity === 0
-        ? "Item removed from cart."
-        : `Quantity updated to ${quantity}.`;
-    renderCart();
-  } catch (error) {
-    showStorageError(error);
-  }
+  const media = document.createElement("div");
+  media.className = "cart-item-media";
+  media.textContent = "—";
+  media.setAttribute("aria-hidden", "true");
+
+  const info = document.createElement("div");
+  info.className = "cart-item-details";
+  const title = document.createElement("strong");
+  title.textContent = `Unavailable product #${id}`;
+  const explanation = document.createElement("p");
+  explanation.className = "cart-item-unit-price";
+  explanation.textContent = "Could not load this product; price excluded from subtotal.";
+  info.append(title, explanation);
+
+  const controls = document.createElement("div");
+  controls.className = "cart-item-controls";
+  const quantityLabel = document.createElement("span");
+  quantityLabel.textContent = `Quantity: ${quantity}`;
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "cart-remove";
+  remove.textContent = "Remove";
+  remove.setAttribute("aria-label", `Remove unavailable product ${id} from cart`);
+  remove.addEventListener("click", () => {
+    changeQuantity(id, 0, row, () => {});
+  });
+  controls.append(quantityLabel, remove);
+  row.append(media, info, controls);
+  return row;
 }
 
 function renderCart() {
   const entries = getCartItems();
-  const items = entries
-    .map((entry) => ({
-      product: loadedProducts.find((p) => p.id === entry.id),
-      quantity: entry.quantity,
-    }))
-    .filter((item) => item.product && Number.isFinite(item.product.price));
-
   const fragment = document.createDocumentFragment();
-  for (const { product, quantity } of items) {
-    fragment.append(createCartRow(product, quantity));
+  for (const entry of entries) {
+    const product = findLoadedProduct(entry.id);
+    fragment.append(
+      product
+        ? createCartRow(product, entry.quantity)
+        : createUnavailableCartRow(entry),
+    );
   }
   list.replaceChildren(fragment);
-
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0,
-  );
-  const visibleCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  count.textContent = String(visibleCount);
-  totalElement.textContent = money.format(subtotal);
-  summary.hidden = items.length === 0;
-  empty.hidden = items.length !== 0;
-  status.textContent =
-    entries.length === 0
-      ? "Your cart is empty."
-      : `${getCartItemCount()} ${getCartItemCount() === 1 ? "item" : "items"} in your cart.`;
+  updateCartSummary();
 }
 
 async function loadCart() {
@@ -159,17 +222,23 @@ async function loadCart() {
     renderCart();
     return;
   }
+
   status.textContent = "Loading cart...";
   const results = await Promise.allSettled(
     entries.map((entry) => getProductById(entry.id)),
   );
   loadedProducts = results
     .filter((result) => result.status === "fulfilled")
-    .map((result) => result.value);
+    .map((result) => result.value)
+    .filter((product) => product && Number.isFinite(product.price));
   renderCart();
-  const missing = entries.length - loadedProducts.length;
-  if (missing) {
-    actionStatus.textContent = `${missing} cart items could not be loaded and are excluded from the subtotal.`;
+
+  const unavailable = entries.length - loadedProducts.length;
+  if (unavailable) {
+    actionStatus.textContent =
+      `${unavailable} ${unavailable === 1 ? "product" : "products"} could not be loaded. ` +
+      "They remain in your cart and count toward the badge, but their prices " +
+      "are excluded from the subtotal. Refresh to retry or remove them.";
   }
 }
 

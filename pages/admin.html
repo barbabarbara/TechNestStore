@@ -7,12 +7,20 @@
     <meta name="description" content="Manage the TechNestStore demonstration product catalogue." />
     <title>Admin | TechNest</title>
     <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/admin.css" />
 </head>
 
 <body data-page="admin" data-root="../">
     <a class="skip-link" href="#main">Skip to main content</a>
     <div id="site-header"></div>
+    <noscript>
+        <nav class="nojs-navigation shell" aria-label="Site navigation">
+            <a href="../index.html">Home</a>
+            <a href="../pages/products.html">Catalogue</a>
+            <a href="../pages/favorites.html">Favorites</a>
+            <a href="../pages/cart.html">Cart</a>
+            <a href="../pages/admin.html">Admin</a>
+        </nav>
+    </noscript>
 
     <main id="main" class="shell admin-main">
         <section class="admin-intro" aria-labelledby="admin-heading">
@@ -99,7 +107,7 @@
                                 class="admin-count">0</span></h2>
                         <p>Select a product to edit it or remove it from the local catalogue.</p>
                     </div>
-                    <button id="admin-reset" class="admin-button admin-button-secondary" type="button">Reset local
+                    <button id="admin-reset" class="admin-button admin-button-secondary" type="button">Reset all local
                         changes</button>
                 </div>
                 <div class="admin-list-controls">

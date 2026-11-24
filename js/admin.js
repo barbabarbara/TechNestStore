@@ -1,10 +1,12 @@
 import { initLayout } from "./ui.js";
+import { getAdminErrorMessage } from "./admin-error.js";
 import {
   ELECTRONICS_CATEGORIES,
   getElectronicsProducts,
   createProduct,
   updateProduct,
   deleteProduct,
+  clearShoppingData,
 } from "./api.js";
 import {
   LOCAL_PRODUCT_ID_START,
@@ -191,7 +193,7 @@ async function loadProducts(fresh = false) {
   } catch (error) {
     console.error("Admin catalogue request failed:", error);
     loaded = false;
-    listStatus.textContent = `Unable to load electronics: ${error.message}`;
+    listStatus.textContent = `Unable to load electronics. ${getAdminErrorMessage(error)}`;
     retryButton.hidden = false;
   }
 }
@@ -327,7 +329,10 @@ async function saveProduct(event) {
     );
   } catch (error) {
     console.error("Unable to save product:", error);
-    showFeedback(`Unable to save product: ${error.message}`, true);
+    showFeedback(
+      `Unable to save product. ${getAdminErrorMessage(error)}`,
+      true,
+    );
   } finally {
     setBusy(false);
   }
@@ -359,7 +364,10 @@ async function removeProduct(id) {
     showFeedback(`${product.title} removed from this browser's catalogue.`);
   } catch (error) {
     console.error("Unable to remove product:", error);
-    showFeedback(`Unable to remove product: ${error.message}`, true);
+    showFeedback(
+      `Unable to remove product. ${getAdminErrorMessage(error)}`,
+      true,
+    );
   } finally {
     setBusy(false);
   }
@@ -367,25 +375,53 @@ async function removeProduct(id) {
 
 async function resetAdmin() {
   if (busy || !loaded) return;
+
+  // Ask before deleting saved browser data.
   if (
-    !window.confirm("Reset all locally created, edited and deleted products?")
+    !window.confirm(
+      "Reset all local product changes AND clear Favorites and Cart? This cannot be undone.",
+    )
   ) {
     return;
   }
 
   setBusy(true, "Resetting...");
+
   try {
-    const createdIds = resetProductOverrides();
-    for (const id of createdIds) removeSavedReferences(id);
-    products = await getElectronicsProducts();
-    renderProducts();
+    // Restore the original product catalogue.
+    resetProductOverrides();
+
+    // NEW: Clear all Favorites and Cart items.
+    clearShoppingData();
+
+    // Reset the Admin form.
     resetForm();
-    showFeedback(
-      "Local product changes reset. The original API catalogue is restored.",
-    );
+
+    // Reload the original products.
+    try {
+      products = await getElectronicsProducts();
+      renderProducts();
+
+      showFeedback("All local changes, Favorites and Cart have been cleared.");
+    } catch (error) {
+      console.error("Could not reload Admin after reset:", error);
+
+      loaded = false;
+      listStatus.textContent =
+        "Saved data cleared, but the catalogue could not reload.";
+
+      retryButton.hidden = false;
+
+      showFeedback(
+        "Favorites, Cart and Admin changes were cleared. " +
+          "Please retry loading the catalogue.",
+        true,
+      );
+    }
   } catch (error) {
-    console.error("Could not reset Admin:", error);
-    showFeedback(`Reset failed: ${error.message}`, true);
+    console.error("Could not reset saved data:", error);
+
+    showFeedback(`Reset failed. ${getAdminErrorMessage(error)}`, true);
   } finally {
     setBusy(false);
   }

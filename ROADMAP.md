@@ -23,7 +23,7 @@
 - [X] **6. Implement favorites and shopping cart**
   - LocalStorage, arrays, quantities, calculations, and shared state.
 
-- [ ] **7. Build the admin page**
+- [X] **7. Build the admin page**
   - CRUD operations, forms, validation, product updates, and deletion.
 
 - [ ] **8. Finish and test the website**
@@ -31,12 +31,3 @@
 
 ---
 
-## Current Focus
-
-**7. Build the admin page**
-
-## How to Use This Roadmap
-
-- Complete one step at a time.
-- Check off a step by changing `- [ ]` to `- [x]` once you understand and have tested it.
-- Commit each completed milestone to GitHub.

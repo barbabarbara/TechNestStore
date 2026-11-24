@@ -23,9 +23,11 @@ function renderFavorites() {
     .filter(Boolean);
 
   const fragment = document.createDocumentFragment();
+  const favoriteIds = new Set(savedIds);
   for (const product of savedProducts) {
     fragment.append(
       createProductCard(product, {
+        favoriteIds,
         onFavoriteChange(item) {
           actionStatus.textContent = `${item.title} removed from favorites.`;
           renderFavorites();
