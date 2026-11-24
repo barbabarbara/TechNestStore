@@ -197,7 +197,9 @@ function renderProducts() {
   listStatus.textContent = [
     catalogueWarning,
     `Showing ${visible.length} of ${products.length} products.`,
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
   retryButton.hidden = !catalogueWarning;
 }
 
@@ -420,7 +422,9 @@ async function resetAdmin() {
       products = await loadCatalogue();
       renderProducts();
 
-      showFeedback("All local changes, Favorites, Cart and order receipts have been cleared. Original stock restored.");
+      showFeedback(
+        "All local changes, Favorites, Cart and order receipts have been cleared. Original stock restored.",
+      );
     } catch (error) {
       console.error("Could not reload Admin after reset:", error);
 
