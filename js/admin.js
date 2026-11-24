@@ -1,13 +1,14 @@
 import { initLayout } from "./ui.js";
 import { getAdminErrorMessage } from "./admin-error.js";
+
 import {
   ELECTRONICS_CATEGORIES,
   getElectronicsProducts,
   createProduct,
   updateProduct,
   deleteProduct,
-  clearShoppingData,
 } from "./api.js";
+
 import {
   LOCAL_PRODUCT_ID_START,
   getAdminOverrides,
@@ -16,11 +17,13 @@ import {
   saveDeletedProduct,
   resetProductOverrides,
 } from "./admin-data.js";
+
 import {
   getFavoriteIds,
   toggleFavorite,
   getCartItems,
   removeFromCart,
+  clearShoppingData,
 } from "./storage.js";
 
 initLayout();

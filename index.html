@@ -15,7 +15,7 @@
 
   <!-- The header and navigation are still created by js/ui.js. -->
   <div id="site-header"></div>
-  <noscript>
+  <!-- <noscript>
     <nav class="nojs-navigation shell" aria-label="Site navigation">
       <a href="./index.html">Home</a>
       <a href="./pages/products.html">Catalogue</a>
@@ -23,14 +23,14 @@
       <a href="./pages/cart.html">Cart</a>
       <a href="./pages/admin.html">Admin</a>
     </nav>
-  </noscript>
+  </noscript> -->
 
   <main id="main">
     <!-- 1. Hero: real HTML, CSS styling, and local decorative artwork. -->
     <section class="home-hero shell" aria-labelledby="home-title">
       <div class="home-hero-copy">
         <p class="home-eyebrow">A BETTER WAY TO SHOP TECH</p>
-        <h1 id="home-title">Everyday tech.<br /><span>Extraordinary feel.</span></h1>
+        <h1 id="home-title">Everyday tech.<br /><span>Exceptional technology.</span></h1>
         <p class="home-hero-description">
           Thoughtful tech, everyday essentials, and everything in between.
           Discover smartphones, laptops, tablets and accessories—all in one simple place.
@@ -55,8 +55,12 @@
       <div class="home-hero-art" aria-hidden="true">
         <span class="home-hero-orbit home-hero-orbit-one"></span>
         <span class="home-hero-orbit home-hero-orbit-two"></span>
-        <img class="home-hero-phone" src="./assets/images/hero-smartphone.webp" alt="" width="334" height="447"
-          fetchpriority="high" />
+        <!-- CSS-only smartphone, matching the final TechNest hero. -->
+        <div class="home-hero-phone">
+          <span class="home-hero-lens home-hero-lens-one"></span>
+          <span class="home-hero-lens home-hero-lens-two"></span>
+          <span class="home-hero-lens home-hero-lens-three"></span>
+        </div>
         <span class="home-tag">Designed to connect.<strong>Built for your day.</strong></span>
       </div>
     </section>

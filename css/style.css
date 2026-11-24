@@ -1568,34 +1568,34 @@ main.shell .admin-intro h1 {
 .home-hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 580px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  min-height: 620px;
   overflow: hidden;
   isolation: isolate;
-  border-radius: 32px;
-  background: linear-gradient(113deg, #f7f8ff 0%, #f1f4ff 55%, #e6ecfb 100%);
+  border-radius: 0 0 34px 34px;
+  background: linear-gradient(130deg, #f5f7fa 0%, #f0f4fa 60%, #eaf4ef 100%);
 }
 
 .home-hero-copy {
   position: relative;
   z-index: 2;
-  padding: 72px 0 47px 64px;
+  padding: 72px 0 90px 64px;
 }
 
 .home-hero h1 {
-  max-width: 600px;
+  max-width: 750px;
   margin: 0 0 22px;
   color: var(--ink);
-  font-size: clamp(3.1rem, 5.1vw, 5.3rem);
-  font-weight: 800;
+  font-size: clamp(3.1rem, 6vw, 6.3rem);
+  font-weight: 700;
   line-height: 1.08;
-  letter-spacing: -0.065em;
+  letter-spacing: -0.055em;
 }
 
 .home-hero h1 span {
   display: block;
   max-width: 470px;
-  color: #396df3;
+  color: #4770dc;
 }
 
 .home-hero-description {
@@ -1637,11 +1637,11 @@ main.shell .admin-intro h1 {
   transform: translateY(-2px);
 }
 .home-action-primary {
-  background: #3168f4;
+  background: #4770dc;
   color: #fff;
 }
 .home-action-primary:hover {
-  background: var(--blue-hover);
+  background: #385fc6;
 }
 .home-action-secondary {
   background: #e9ecf5;
@@ -1687,36 +1687,71 @@ main.shell .admin-intro h1 {
   overflow: hidden;
 }
 
+/* Thin elliptical outlines instead of filled purple shapes. */
 .home-hero-orbit {
   position: absolute;
-  width: 92%;
-  height: 53%;
-  border-radius: 48% 52% 60% 40% / 52% 43% 57% 48%;
-  background: rgb(137 154 252 / 20%);
-  transform: rotate(-23deg);
+  border: 1px solid rgb(71 112 220 / 19%);
+  border-radius: 50%;
+  background: transparent;
+  transform: rotate(-26deg);
+  pointer-events: none;
 }
 
 .home-hero-orbit-one {
-  width: 97%;
-  height: 55%;
-  transform: translate(-8%, 2%) rotate(-25deg);
+  width: 520px;
+  height: 260px;
 }
 
 .home-hero-orbit-two {
-  width: 84%;
-  height: 39%;
-  background: rgb(134 163 240 / 10%);
-  transform: translate(1%, 35%) rotate(-32deg);
+  width: 370px;
+  height: 440px;
+  border-color: rgb(81 182 140 / 17%);
 }
 
+/* CSS-drawn phone based on the original TechNest hero. */
 .home-hero-phone {
   position: relative;
   z-index: 1;
-  width: min(80%, 366px);
-  max-height: 490px;
-  object-fit: contain;
-  filter: drop-shadow(24px 26px 23px rgb(40 57 90 / 19%));
-  transform: translate(0, 3%);
+  width: 230px;
+  height: 380px;
+  border: 9px solid #222832;
+  border-radius: 42px;
+  background: linear-gradient(160deg, #242d40, #5a6a87 46%, #1d2532);
+  box-shadow:
+    26px 40px 65px rgb(23 40 70 / 19%),
+    inset 0 0 3px rgb(255 255 255 / 45%);
+  transform: rotate(17deg);
+}
+
+.home-hero-phone::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 25% 80%, rgb(71 112 220 / 54%), transparent 55%),
+    linear-gradient(135deg, #404e65, #111b2d);
+}
+
+.home-hero-lens {
+  position: absolute;
+  z-index: 2;
+  left: 20px;
+  width: 42px;
+  height: 42px;
+  border: 4px solid #263249;
+  border-radius: 50%;
+  background: radial-gradient(circle, #161e2e 25%, #758ca5 34%, #182439 48%);
+}
+
+.home-hero-lens-one {
+  top: 25px;
+}
+.home-hero-lens-two {
+  top: 70px;
+}
+.home-hero-lens-three {
+  top: 115px;
 }
 
 .home-tag {
@@ -1991,13 +2026,37 @@ main.shell .admin-intro h1 {
     min-height: 375px;
   }
   .home-hero-phone {
-    width: min(55%, 270px);
+    width: 140px;
+    height: 235px;
+    border-width: 6px;
+    border-radius: 28px;
+  }
+  .home-hero-phone::after {
+    inset: 5px;
+    border-radius: 19px;
+  }
+  .home-hero-lens {
+    left: 11px;
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+  }
+  .home-hero-lens-one {
+    top: 14px;
+  }
+  .home-hero-lens-two {
+    top: 43px;
+  }
+  .home-hero-lens-three {
+    top: 72px;
   }
   .home-hero-orbit-one {
-    width: 70%;
+    width: 320px;
+    height: 160px;
   }
   .home-hero-orbit-two {
-    width: 57%;
+    width: 220px;
+    height: 275px;
   }
   .home-proof {
     margin-top: 30px;
@@ -2036,7 +2095,16 @@ main.shell .admin-intro h1 {
     min-height: 290px;
   }
   .home-hero-phone {
-    width: min(66%, 220px);
+    width: 120px;
+    height: 200px;
+  }
+  .home-hero-orbit-one {
+    width: 270px;
+    height: 140px;
+  }
+  .home-hero-orbit-two {
+    width: 200px;
+    height: 240px;
   }
   .home-tag {
     right: 13px;
