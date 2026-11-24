@@ -313,3 +313,8 @@ async function loadProductDetails() {
 }
 
 loadProductDetails();
+
+// Refresh cached pages when returning through browser Back/Forward.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) window.location.reload();
+});

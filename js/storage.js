@@ -1,5 +1,7 @@
 /* === TechNestStore | Browser storage === */
 
+import { preparePurchase } from "./admin-data.js";
+
 const FAVORITES_KEY = "technest-favorites";
 const CART_KEY = "technest-cart-v1";
 export const MAX_CART_QUANTITY = 99;
@@ -117,6 +119,11 @@ export function removeFromCart(id) {
   );
 }
 
+// Complete a simulated purchase without removing saved favorites.
+export function clearCart() {
+  saveArray(CART_KEY, []);
+}
+
 export function clearShoppingData() {
   localStorage.removeItem("technest-favorites");
   localStorage.removeItem("technest-cart-v1");
@@ -124,7 +131,22 @@ export function clearShoppingData() {
   window.dispatchEvent(new Event("technest:storage-change"));
 }
 
-// Complete a simulated purchase without removing saved favorites.
-export function clearCart() {
-  saveArray(CART_KEY, []);
+// Complete a purchase without changing Favorites. No real API write is made.
+export function completePurchase(products) {
+  const entries = getCartItems();
+  if (!entries.length) throw new Error("Your cart is empty.");
+  const { order, save } = preparePurchase(entries, products);
+  const previousCart = localStorage.getItem(CART_KEY);
+  localStorage.setItem(CART_KEY, "[]");
+  try {
+    save();
+  } catch (error) {
+    // Restore the original cart if the inventory/receipt write fails.
+    if (previousCart === null) localStorage.removeItem(CART_KEY);
+    else localStorage.setItem(CART_KEY, previousCart);
+    throw error;
+  }
+  window.dispatchEvent(new Event("technest:catalogue-change"));
+  window.dispatchEvent(new Event("technest:storage-change"));
+  return order;
 }

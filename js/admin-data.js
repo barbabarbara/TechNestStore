@@ -10,14 +10,14 @@ function validId(id) {
   return Number.isSafeInteger(id) && id > 0;
 }
 
-export function getAdminOverrides() {
+function readCatalogueState() {
   try {
     const saved = localStorage.getItem(OVERRIDES_KEY);
-    if (!saved) return emptyOverrides();
+    if (!saved) return { ...emptyOverrides(), orders: [] };
 
     const data = JSON.parse(saved);
     if (!data || typeof data !== "object" || Array.isArray(data)) {
-      return emptyOverrides();
+      return { ...emptyOverrides(), orders: [] };
     }
 
     const created = Array.isArray(data.created)
@@ -38,16 +38,25 @@ export function getAdminOverrides() {
       ? [...new Set(data.deleted.filter(validId))]
       : [];
 
-    return { created, updated, deleted };
+    return { created, updated, deleted, orders: Array.isArray(data.orders) ? data.orders : [] };
   } catch (error) {
     console.warn("Unable to read local Admin changes:", error);
-    return emptyOverrides();
+    return { ...emptyOverrides(), orders: [] };
   }
+}
+
+export function getAdminOverrides() {
+  const { created, updated, deleted } = readCatalogueState();
+  return { created, updated, deleted };
+}
+
+export function getOrderHistory() {
+  return readCatalogueState().orders;
 }
 
 function saveOverrides(overrides) {
   // Intentionally let write errors reach Admin so visitors get feedback.
-  localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
+  localStorage.setItem(OVERRIDES_KEY, JSON.stringify({ ...overrides, orders: getOrderHistory() }));
   window.dispatchEvent(new Event("technest:catalogue-change"));
 }
 
@@ -132,4 +141,47 @@ export function resetProductOverrides() {
   localStorage.removeItem(OVERRIDES_KEY);
   window.dispatchEvent(new Event("technest:catalogue-change"));
   return localIds;
+}
+
+// Prepare all inventory changes and an immutable receipt before writing anything.
+// Stock and receipts share the existing local catalogue record.
+export function preparePurchase(entries, products) {
+  const state = readCatalogueState();
+  const items = entries.map(({ id, quantity }) => {
+    const displayed = products.find((product) => product.id === id);
+    if (!displayed || state.deleted.includes(id)) {
+      throw new Error("A product is no longer available. Refresh your cart.");
+    }
+    const local = state.created.find((product) => product.id === id);
+    const product = id >= LOCAL_PRODUCT_ID_START
+      ? local
+      : { ...displayed, ...state.updated[id] };
+    if (!product || !Number.isSafeInteger(product.stock) || product.stock < quantity) {
+      throw new Error(`Not enough stock for ${displayed.title}. Refresh your cart.`);
+    }
+    if (!Number.isFinite(product.price) || product.price < 0 || product.price !== displayed.price) {
+      throw new Error(`The price of ${displayed.title} changed. Refresh your cart.`);
+    }
+    const stock = product.stock - quantity;
+    if (local) local.stock = stock;
+    else state.updated[id] = { ...state.updated[id], stock };
+    const unitCents = Math.round(product.price * 100);
+    return {
+      id, title: product.title, brand: product.brand || "Unknown brand",
+      quantity, unitCents, totalCents: unitCents * quantity,
+    };
+  });
+  const date = new Date();
+  const order = {
+    number: `TN-${date.toISOString().slice(0, 10).replaceAll("-", "")}-${String(state.orders.length + 1).padStart(3, "0")}`,
+    date: date.toISOString(),
+    items,
+    quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+    totalCents: items.reduce((sum, item) => sum + item.totalCents, 0),
+  };
+  state.orders.unshift(order);
+  return {
+    order,
+    save() { localStorage.setItem(OVERRIDES_KEY, JSON.stringify(state)); },
+  };
 }

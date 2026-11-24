@@ -457,6 +457,12 @@ main.shell > section > p {
   line-height: 1.5;
 }
 
+.product-card-stock {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .product-card-price {
   margin: auto 0 0;
   padding-top: 16px;
@@ -1119,13 +1125,12 @@ main.shell > section > .action-status,
   color: var(--muted);
   font-size: 0.85rem;
 }
-
 .checkout-button {
   display: block;
   width: 100%;
   margin-bottom: 16px;
 }
-/* Successful purchase confirmation */
+/* Completed purchases and persistent receipt history. */
 main.shell > section > .purchase-success {
   margin: 24px 0;
   padding: 24px;
@@ -1136,19 +1141,39 @@ main.shell > section > .purchase-success {
   font-size: 1.05rem;
   font-weight: 600;
 }
-
-/* Order summary after a successful purchase */
 #cart-list[hidden] + .cart-summary {
   grid-column: 1 / -1;
   width: 100%;
   max-width: 420px;
 }
+.order-history { margin-block: 24px; }
+.order-history h2 { margin: 0 0 16px; }
+.order-receipt {
+  margin-bottom: 12px;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+.order-receipt summary { cursor: pointer; font-weight: 700; overflow-wrap: anywhere; }
+.receipt-date { margin: 8px 0; color: var(--muted); font-size: 0.875rem; }
+.receipt-items { list-style: none; padding: 0; margin: 16px 0; }
+.receipt-items li, .receipt-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+.receipt-items li > div { min-width: 0; overflow-wrap: anywhere; }
+.receipt-items li > strong, .receipt-total strong { flex-shrink: 0; }
+.receipt-total { font-size: 1.05rem; font-weight: 600; }
 
 .secondary-cart-link {
   color: var(--blue);
   font-weight: 600;
 }
-
 .secondary-cart-link:hover {
   color: var(--blue-hover);
 }

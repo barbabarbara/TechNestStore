@@ -98,6 +98,12 @@ export function createProductCard(product, options = {}) {
   description.className = "product-card-description";
   description.textContent = product.description || "";
 
+  const stock = document.createElement("p");
+  stock.className = "product-card-stock";
+  stock.textContent = Number.isSafeInteger(product.stock)
+    ? product.stock > 0 ? `${product.stock} in stock` : "Out of stock"
+    : "Stock unavailable";
+
   const footer = document.createElement("div");
   footer.className = "product-card-footer";
   const price = document.createElement("p");
@@ -125,7 +131,7 @@ export function createProductCard(product, options = {}) {
   });
 
   footer.append(price, addButton);
-  content.append(brand, title, description, footer);
+  content.append(brand, title, description, stock, footer);
   card.append(media, content);
   return card;
 }

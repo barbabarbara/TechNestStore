@@ -1,12 +1,13 @@
 /* === TechNestStore | Shopping cart === */
 import { initLayout } from "./ui.js";
 import { getProductById } from "./api.js";
+import { getOrderHistory } from "./admin-data.js";
 import { calculateCartSubtotal } from "./cart-utils.js";
 import {
   getCartItems,
   getCartItemCount,
   setCartQuantity,
-  clearCart,
+  completePurchase,
   MAX_CART_QUANTITY,
 } from "./storage.js";
 
@@ -19,6 +20,9 @@ const summary = document.querySelector("#cart-summary");
 const count = document.querySelector("#cart-count");
 const totalElement = document.querySelector("#cart-subtotal");
 const checkoutButton = document.querySelector("#checkout-button");
+const historySection = document.querySelector("#order-history");
+const receipts = document.querySelector("#order-receipts");
+const summaryHeading = document.querySelector("#cart-summary-heading");
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -40,14 +44,72 @@ function updateCartSummary() {
   count.textContent = String(quantity);
   totalElement.textContent = money.format(subtotal);
   checkoutButton.disabled =
-    entries.length === 0 ||
-    entries.some((entry) => !findLoadedProduct(entry.id));
-  summary.hidden = entries.length === 0;
-  empty.hidden = entries.length !== 0;
+    entries.length === 0 || entries.some((entry) => !canPurchase(entry));
+  const orders = getOrderHistory();
+  const completed = entries.length === 0 && orders.length > 0;
+  summary.hidden = entries.length === 0 && !completed;
+  empty.hidden = entries.length !== 0 || completed;
+  list.hidden = completed;
+  status.hidden = completed;
+  checkoutButton.hidden = completed;
+  summaryHeading.textContent = completed ? "Current cart" : "Order summary";
+  renderReceipts(orders, completed);
   status.textContent =
     quantity === 0
       ? "Your cart is empty."
       : `${quantity} ${quantity === 1 ? "item" : "items"} in your cart.`;
+}
+
+function canPurchase(entry) {
+  const product = findLoadedProduct(entry.id);
+  return product && Number.isSafeInteger(product.stock) && product.stock >= entry.quantity;
+}
+
+function receiptElement(tag, text, className = "") {
+  const element = document.createElement(tag);
+  element.textContent = text;
+  element.className = className;
+  return element;
+}
+
+// Receipt data is rendered as text, never as untrusted HTML.
+function renderReceipts(orders, completed) {
+  historySection.hidden = orders.length === 0;
+  const fragment = document.createDocumentFragment();
+  orders.forEach((order, index) => {
+    const receipt = document.createElement("details");
+    receipt.className = "order-receipt";
+    receipt.open = completed && index === 0;
+    const heading = receiptElement("summary", `${order.number} · ${money.format(order.totalCents / 100)}`);
+    const date = receiptElement("p", new Date(order.date).toLocaleString("en-GB"), "receipt-date");
+    const items = document.createElement("ul");
+    items.className = "receipt-items";
+    for (const item of order.items) {
+      const row = document.createElement("li");
+      const info = document.createElement("div");
+      info.append(
+        receiptElement("strong", item.title),
+        receiptElement("p", `${item.brand} · Quantity: ${item.quantity} · ${money.format(item.unitCents / 100)} each`, "receipt-date"),
+      );
+      row.append(info, receiptElement("strong", money.format(item.totalCents / 100)));
+      items.append(row);
+    }
+    const total = document.createElement("div");
+    total.className = "receipt-total";
+    total.append(receiptElement("span", `${order.quantity} items purchased · Order total`), receiptElement("strong", money.format(order.totalCents / 100)));
+    receipt.append(heading, date, items, total, receiptElement("p", "Simulated order — no real payment collected.", "receipt-date"));
+    fragment.append(receipt);
+  });
+  receipts.replaceChildren(fragment);
+}
+
+function showPurchaseConfirmation(focus = false) {
+  actionStatus.classList.add("purchase-success");
+  actionStatus.textContent = "Thank you for your purchase! Your simulated order has been completed successfully.";
+  if (focus) {
+    actionStatus.tabIndex = -1;
+    actionStatus.focus({ preventScroll: true });
+  }
 }
 
 function showStorageError(error) {
@@ -186,8 +248,7 @@ function createUnavailableCartRow({ id, quantity }) {
   title.textContent = `Unavailable product #${id}`;
   const explanation = document.createElement("p");
   explanation.className = "cart-item-unit-price";
-  explanation.textContent =
-    "Could not load this product; price excluded from subtotal.";
+  explanation.textContent = "Could not load this product; price excluded from subtotal.";
   info.append(title, explanation);
 
   const controls = document.createElement("div");
@@ -198,10 +259,7 @@ function createUnavailableCartRow({ id, quantity }) {
   remove.type = "button";
   remove.className = "cart-remove";
   remove.textContent = "Remove";
-  remove.setAttribute(
-    "aria-label",
-    `Remove unavailable product ${id} from cart`,
-  );
+  remove.setAttribute("aria-label", `Remove unavailable product ${id} from cart`);
   remove.addEventListener("click", () => {
     changeQuantity(id, 0, row, () => {});
   });
@@ -229,6 +287,7 @@ async function loadCart() {
   const entries = getCartItems();
   if (entries.length === 0) {
     renderCart();
+    if (getOrderHistory().length) showPurchaseConfirmation();
     return;
   }
 
@@ -242,6 +301,9 @@ async function loadCart() {
     .filter((product) => product && Number.isFinite(product.price));
   renderCart();
 
+  if (entries.some((entry) => findLoadedProduct(entry.id) && !canPurchase(entry))) {
+    actionStatus.textContent = "Some quantities exceed available stock. Reduce quantities before purchasing.";
+  }
   const unavailable = entries.length - loadedProducts.length;
   if (unavailable) {
     actionStatus.textContent =
@@ -252,46 +314,34 @@ async function loadCart() {
 }
 
 // Simulate a successful purchase; no payment or API order is submitted.
-// Simulate a successful purchase.
 function checkout() {
   const entries = getCartItems();
-
   if (
     entries.length === 0 ||
-    entries.some((entry) => !findLoadedProduct(entry.id))
+    entries.some((entry) => !canPurchase(entry))
   ) {
     return;
   }
 
   try {
-    clearCart();
+    // Persist first so a storage failure never displays a false confirmation.
+    completePurchase(loadedProducts);
   } catch (error) {
     showStorageError(error);
+    actionStatus.textContent += ` ${error.message}`;
     return;
   }
 
   loadedProducts = [];
   renderCart();
-
-  // Hide unnecessary elements after a successful purchase.
-  empty.hidden = true;
-  list.hidden = true;
-  status.hidden = true;
-  checkoutButton.hidden = true;
-
-  // Keep the reset order summary visible.
-  summary.hidden = false;
-
-  // Display a clear purchase confirmation.
-  actionStatus.classList.add("purchase-success");
-
-  actionStatus.textContent =
-    "Thank you for your purchase! Your simulated order has been completed successfully.";
-
-  actionStatus.tabIndex = -1;
-  actionStatus.focus({ preventScroll: true });
+  showPurchaseConfirmation(true);
 }
 
 checkoutButton.disabled = true;
 checkoutButton.addEventListener("click", checkout);
 loadCart();
+
+// Refresh cached pages when returning through browser Back/Forward.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) window.location.reload();
+});

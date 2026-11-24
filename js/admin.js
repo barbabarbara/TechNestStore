@@ -382,7 +382,7 @@ async function resetAdmin() {
   // Ask before deleting saved browser data.
   if (
     !window.confirm(
-      "Reset all local product changes AND clear Favorites and Cart? This cannot be undone.",
+      "Reset all local product changes, restore stock, and clear Favorites, Cart and order receipts? This cannot be undone.",
     )
   ) {
     return;
@@ -405,7 +405,7 @@ async function resetAdmin() {
       products = await getElectronicsProducts();
       renderProducts();
 
-      showFeedback("All local changes, Favorites and Cart have been cleared.");
+      showFeedback("All local changes, Favorites, Cart and order receipts have been cleared. Original stock restored.");
     } catch (error) {
       console.error("Could not reload Admin after reset:", error);
 
@@ -416,7 +416,7 @@ async function resetAdmin() {
       retryButton.hidden = false;
 
       showFeedback(
-        "Favorites, Cart and Admin changes were cleared. " +
+        "Favorites, Cart, order receipts and Admin changes were cleared. " +
           "Please retry loading the catalogue.",
         true,
       );
@@ -453,3 +453,8 @@ resetButton.addEventListener("click", resetAdmin);
 retryButton.addEventListener("click", () => loadProducts(true));
 
 await loadProducts();
+
+// Refresh cached pages when returning through browser Back/Forward.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) window.location.reload();
+});
