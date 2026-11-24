@@ -112,38 +112,41 @@ async function getCategoryProducts(category) {
 let originalProductsPromise = null;
 
 // Read the four electronics categories, then show local Admin changes too.
-export async function getElectronicsProducts({ fresh = false } = {}) {
+export async function getElectronicsProducts({
+  fresh = false,
+  onWarning = () => {},
+} = {}) {
   if (fresh || !originalProductsPromise) {
     // A fresh request always bypasses both the in-memory and session cache.
     const cachedProducts = fresh ? null : readCatalogueCache();
     if (cachedProducts !== null) {
-      originalProductsPromise = Promise.resolve(cachedProducts);
+      originalProductsPromise = Promise.resolve({ products: cachedProducts, failedCategories: [] });
     } else {
       originalProductsPromise = Promise.allSettled(
         ELECTRONICS_CATEGORIES.map((category) => getCategoryProducts(category)),
       )
         .then((results) => {
           const products = [];
-          let successfulCategories = 0;
+          const failedCategories = [];
           results.forEach((result, index) => {
             if (result.status === "fulfilled") {
-              successfulCategories += 1;
               products.push(...result.value);
             } else {
+              failedCategories.push(ELECTRONICS_CATEGORIES[index]);
               console.warn(
                 `Could not load ${ELECTRONICS_CATEGORIES[index]}:`,
                 result.reason,
               );
             }
           });
-          if (successfulCategories === 0) {
+          if (failedCategories.length === ELECTRONICS_CATEGORIES.length) {
             throw new Error("Unable to load electronics. Please try again.");
           }
           // A partially loaded catalogue must not become a persistent cache.
-          if (successfulCategories === ELECTRONICS_CATEGORIES.length) {
+          if (failedCategories.length === 0) {
             saveCatalogueCache(products);
           }
-          return products;
+          return { products, failedCategories };
         })
         .catch((error) => {
           originalProductsPromise = null;
@@ -152,7 +155,15 @@ export async function getElectronicsProducts({ fresh = false } = {}) {
     }
   }
   // Always apply live local Admin changes, including when using cached data.
-  return applyProductOverrides(await originalProductsPromise);
+  const { products, failedCategories } = await originalProductsPromise;
+  onWarning(
+    failedCategories.length
+      ? `Warning: Could not load all product categories (${failedCategories
+          .map((category) => category.replaceAll("-", " "))
+          .join(", ")}). Please try again later.`
+      : "",
+  );
+  return applyProductOverrides(products);
 }
 
 export async function getProductById(id) {

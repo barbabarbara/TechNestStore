@@ -103,14 +103,22 @@ export function initFeaturedProducts({ loadProducts = getElectronicsProducts } =
     const selectedId = products[current]?.id;
     status.textContent = "Loading featured products…";
     try {
-      const items = selectFeaturedProducts(await loadProducts());
+      let warning = "";
+      const items = selectFeaturedProducts(await loadProducts({
+        onWarning(message) {
+          warning = message;
+        },
+      }));
       if (requestId !== request) return;
       products = items;
       current = Math.max(0, products.findIndex((product) => product.id === selectedId));
       slide.hidden = products.length === 0;
       controls.hidden = products.length < 2;
       pagination.hidden = products.length === 0;
-      status.textContent = products.length ? "" : "No featured products are currently available.";
+      status.textContent = [
+        warning,
+        products.length ? "" : "No featured products are currently available.",
+      ].filter(Boolean).join(" ");
       dotButtons = products.map((product, index) => {
         const button = document.createElement("button");
         button.type = "button";

@@ -57,6 +57,17 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
 });
 
 let products = [];
+let catalogueWarning = "";
+
+function loadCatalogue(fresh = false) {
+  catalogueWarning = "";
+  return getElectronicsProducts({
+    fresh,
+    onWarning(message) {
+      catalogueWarning = message;
+    },
+  });
+}
 let busy = false;
 let loaded = false;
 
@@ -183,14 +194,18 @@ function renderProducts() {
     fragment.append(empty);
   }
   list.replaceChildren(fragment);
-  listStatus.textContent = `Showing ${visible.length} of ${products.length} products.`;
+  listStatus.textContent = [
+    catalogueWarning,
+    `Showing ${visible.length} of ${products.length} products.`,
+  ].filter(Boolean).join(" ");
+  retryButton.hidden = !catalogueWarning;
 }
 
 async function loadProducts(fresh = false) {
   listStatus.textContent = "Loading electronics from DummyJSON...";
   retryButton.hidden = true;
   try {
-    products = await getElectronicsProducts({ fresh });
+    products = await loadCatalogue(fresh);
     loaded = true;
     renderProducts();
   } catch (error) {
@@ -322,7 +337,7 @@ async function saveProduct(event) {
       saveUpdatedProduct(id, changes);
     }
 
-    products = await getElectronicsProducts();
+    products = await loadCatalogue();
     renderProducts();
     resetForm();
     showFeedback(
@@ -361,7 +376,7 @@ async function removeProduct(id) {
     }
     saveDeletedProduct(id);
     removeSavedReferences(id);
-    products = await getElectronicsProducts();
+    products = await loadCatalogue();
     renderProducts();
     if (editIdInput.value === String(id)) resetForm();
     showFeedback(`${product.title} removed from this browser's catalogue.`);
@@ -402,7 +417,7 @@ async function resetAdmin() {
 
     // Reload the original products.
     try {
-      products = await getElectronicsProducts();
+      products = await loadCatalogue();
       renderProducts();
 
       showFeedback("All local changes, Favorites, Cart and order receipts have been cleared. Original stock restored.");

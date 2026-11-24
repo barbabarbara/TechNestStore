@@ -15,6 +15,13 @@ const sortSelect = document.querySelector("#sort-select");
 const clearFiltersButton = document.querySelector("#clear-filters");
 
 let allProducts = [];
+let catalogueWarning = "";
+
+function showCatalogueStatus(message) {
+  statusMessage.textContent = [catalogueWarning, message]
+    .filter(Boolean)
+    .join(" ");
+}
 
 function populateBrandFilter(products) {
   const brands = [
@@ -87,10 +94,11 @@ function updateCatalogue() {
   }
 
   productList.replaceChildren(fragment);
-  statusMessage.textContent =
+  showCatalogueStatus(
     visibleProducts.length === 0
       ? "No products match your search or filters."
-      : `Showing ${visibleProducts.length} of ${allProducts.length} products.`;
+      : `Showing ${visibleProducts.length} of ${allProducts.length} products.`,
+  );
 }
 
 function clearFilters() {
@@ -123,13 +131,18 @@ clearFiltersButton.addEventListener("click", () => {
 });
 
 async function loadProducts() {
+  catalogueWarning = "";
   statusMessage.textContent = "Loading products...";
   productList.replaceChildren();
 
   try {
-    allProducts = await getElectronicsProducts();
+    allProducts = await getElectronicsProducts({
+      onWarning(message) {
+        catalogueWarning = message;
+      },
+    });
     if (allProducts.length === 0) {
-      statusMessage.textContent = "No products available.";
+      showCatalogueStatus("No products available.");
       return;
     }
 

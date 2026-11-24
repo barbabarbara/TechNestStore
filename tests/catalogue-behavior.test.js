@@ -115,3 +115,34 @@ test("brand filtering and empty search results work", async () => {
   assert.deepEqual(visibleIds(), []);
   assert.match(get("catalogue-status").textContent, /No products match/);
 });
+
+test("partial catalogue warning persists when search or filters change", async () => {
+  const fetchAll = globalThis.fetch;
+  const originalWarn = console.warn;
+  console.warn = () => {};
+  globalThis.fetch = async (url, options) => {
+    if (String(url).includes("/category/laptops?")) return { ok: false, status: 503 };
+    return fetchAll(url, options);
+  };
+  try {
+    const api = await import("../js/api.js");
+    await api.getElectronicsProducts({ fresh: true });
+    window.location.search = "";
+    get("product-search").value = "";
+    get("brand-filter").value = "";
+    get("category-filter").value = "";
+    await import("../js/products.js?partial-warning");
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.match(get("catalogue-status").textContent, /Warning:.*laptops/);
+    trigger("clear-filters", "click");
+    assert.equal(visibleIds().length, 4);
+    assert.match(get("catalogue-status").textContent, /Warning:.*laptops/);
+    get("category-filter").value = "laptops";
+    trigger("category-filter");
+    assert.deepEqual(visibleIds(), []);
+    assert.match(get("catalogue-status").textContent, /Warning:.*laptops.*No products match/);
+  } finally {
+    console.warn = originalWarn;
+    globalThis.fetch = fetchAll;
+  }
+});

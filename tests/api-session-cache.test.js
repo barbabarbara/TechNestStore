@@ -70,3 +70,28 @@ test("partially loaded catalogue is never saved as complete session cache", asyn
   assert.equal((await nextPage.getElectronicsProducts()).length, 4);
   assert.equal(calls.length, previous + 4);
 });
+
+test("partial catalogue warning survives in-memory reuse and clears after recovery", async () => {
+  values.clear();
+  failCategory = "laptops";
+  const originalWarn = console.warn;
+  console.warn = () => {};
+  try {
+    const api = await import("../js/api.js?warning-recovery");
+    const warnings = [];
+    const onWarning = (message) => warnings.push(message);
+    assert.equal((await api.getElectronicsProducts({ onWarning })).length, 3);
+    assert.match(warnings[0], /Warning:.*laptops/);
+    assert.equal(values.size, 0);
+    const previous = calls.length;
+    await api.getElectronicsProducts({ onWarning });
+    assert.equal(calls.length, previous);
+    assert.equal(warnings[1], warnings[0]);
+    failCategory = null;
+    assert.equal((await api.getElectronicsProducts({ fresh: true, onWarning })).length, 4);
+    assert.equal(warnings[2], "");
+  } finally {
+    console.warn = originalWarn;
+    failCategory = null;
+  }
+});

@@ -71,3 +71,16 @@ test("API failure hides the carousel and shows an error message", async () => {
   assert.equal(el.slide.hidden, true);
   assert.match(el.status.textContent, /Unable to load featured products/);
 });
+
+test("partial catalogue warning stays visible while switching featured products", async () => {
+  const el = setup();
+  await initFeaturedProducts({ loadProducts: async ({ onWarning }) => {
+    onWarning("Warning: Could not load all product categories (laptops).");
+    return products;
+  } });
+  assert.equal(el.slide.hidden, false);
+  assert.match(el.status.textContent, /Warning:.*laptops/);
+  el.next.click();
+  assert.equal(el.count.textContent, "2 of 3");
+  assert.match(el.status.textContent, /Warning:.*laptops/);
+});
