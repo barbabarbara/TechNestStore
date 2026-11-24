@@ -8,7 +8,7 @@ const navigationItems = [
     page: "home",
   },
   {
-    label: "Catalogue",
+    label: "Products",
     path: "pages/products.html",
     page: "products",
   },
