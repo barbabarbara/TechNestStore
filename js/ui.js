@@ -178,13 +178,32 @@ export function initLayout() {
   }
 
   // Insert the shared footer into the document.
+  // footerContainer.innerHTML = `
+  //   <footer class="site-footer">
+  //     <div class="shell footer-inner">
+  //       <p>© ${new Date().getFullYear()} TechNest. Student Project. Simulated orders only</p>
+  //     </div>
+  //   </footer>
+  // `;
+
   footerContainer.innerHTML = `
-    <footer class="site-footer">
-      <div class="shell footer-inner">
-        <p>© ${new Date().getFullYear()} TechNest. Student Project. Simulated orders only</p>
-      </div>
-    </footer>
-  `;
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <p>
+        © ${new Date().getFullYear()} TechNest · Student project · Simulated orders only
+      </p>
+
+      <a
+        class="footer-link"
+        href="https://dummyjson.com/docs/products"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        DummyJSON API <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </footer>
+`;
 }
 
 // Refresh the Favorites and Cart badges using the stored values.

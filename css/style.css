@@ -692,13 +692,40 @@ main.shell > a[href="./products.html"] + section,
   color: var(--muted);
 }
 
-.footer-inner {
+/* .footer-inner {
   text-align: center;
   font-size: 0.875rem;
 }
 
 .footer-inner p {
   margin: 0;
+} */
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.875rem;
+}
+.footer-link {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: var(--blue);
+}
+
+@media (max-width: 600px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 }
 
 /* 12. Responsive layouts ----------------------------------- */
