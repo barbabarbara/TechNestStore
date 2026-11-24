@@ -19,6 +19,7 @@ class Element {
     this.classList = {
       add: (...names) => names.forEach((name) => classes.add(name)),
       contains: (name) => classes.has(name),
+      remove: (...names) => names.forEach((name) => classes.delete(name)),
     };
   }
 
@@ -343,4 +344,42 @@ test("Orders page shows all receipts newest first and reflects Admin reset", asy
   assert.equal(get("order-history").hidden, true);
   assert.equal(get("order-receipts").children.length, 0);
   assert.equal(get("cart-empty").hidden, false);
+});
+
+function externalCartChange(entries) {
+  localStorage.setItem("technest-cart-v1", JSON.stringify(entries));
+  window.dispatchEvent(Object.assign(new Event("storage"), { key: "technest-cart-v1" }));
+}
+
+test("cross-tab cart changes refresh rows, subtotal and checkout availability", async () => {
+  browser.clear();
+  externalCartChange([{ id: 121, quantity: 2 }, { id: 122, quantity: 1 }]);
+  assert.equal(get("checkout-button").disabled, true);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(rows().length, 2);
+  assert.equal(get("cart-count").textContent, "3");
+  assert.equal(get("cart-subtotal").textContent, "$899.98");
+  assert.equal(get("checkout-button").disabled, false);
+  externalCartChange([]);
+  assert.equal(rows().length, 0);
+  assert.equal(get("cart-count").textContent, "0");
+  assert.equal(get("cart-subtotal").textContent, "$0.00");
+  assert.equal(get("checkout-button").disabled, true);
+});
+
+test("checkout refuses changed quantities even before the storage event arrives", async () => {
+  browser.clear();
+  externalCartChange([{ id: 121, quantity: 1 }]);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(get("cart-subtotal").textContent, "$199.99");
+  // Storage has changed, but the other tab's event has not arrived yet.
+  localStorage.setItem("technest-cart-v1", JSON.stringify([{ id: 121, quantity: 2 }]));
+  get("checkout-button").click();
+  assert.equal(getCartItemCount(), 2);
+  const { getOrderHistory } = await import("../js/admin-data.js");
+  assert.equal(getOrderHistory().length, 0);
+  assert.match(get("cart-action-status").textContent, /Review it before purchasing/);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(get("cart-subtotal").textContent, "$399.98");
+  assert.equal(get("checkout-button").disabled, false);
 });

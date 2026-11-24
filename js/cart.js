@@ -30,6 +30,16 @@ const money = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 let loadedProducts = [];
+let loadVersion = 0;
+let displayedCart = "";
+let displayedCatalogue = null;
+let loading = false;
+
+// Compare the cart the customer sees with the current shared storage.
+function cartIsCurrent() {
+  return !loading && displayedCart === JSON.stringify(getCartItems()) &&
+    displayedCatalogue === localStorage.getItem("technest-admin-overrides-v1");
+}
 
 function findLoadedProduct(id) {
   const product = loadedProducts.find((item) => item?.id === id);
@@ -45,7 +55,7 @@ function updateCartSummary() {
   count.textContent = String(quantity);
   totalElement.textContent = money.format(subtotal);
   checkoutButton.disabled =
-    entries.length === 0 || entries.some((entry) => !canPurchase(entry));
+    loading || entries.length === 0 || entries.some((entry) => !canPurchase(entry));
   const orders = getOrderHistory();
   const completed = entries.length === 0 && orders.length > 0;
   summary.hidden = entries.length === 0 && !completed;
@@ -92,6 +102,10 @@ function focusAfterRemoval(row) {
 }
 
 function changeQuantity(id, quantity, row, updateRow) {
+  if (!cartIsCurrent()) {
+    loadCart();
+    return;
+  }
   try {
     // Write to storage first: failures must not change the visible controls.
     setCartQuantity(id, quantity);
@@ -107,6 +121,7 @@ function changeQuantity(id, quantity, row, updateRow) {
       actionStatus.textContent = `Quantity updated to ${quantity}.`;
     }
 
+    displayedCart = JSON.stringify(getCartItems());
     updateCartSummary();
   } catch (error) {
     showStorageError(error);
@@ -245,25 +260,49 @@ function renderCart() {
     );
   }
   list.replaceChildren(fragment);
+  displayedCart = JSON.stringify(entries);
+  displayedCatalogue = localStorage.getItem("technest-admin-overrides-v1");
   updateCartSummary();
 }
 
 async function loadCart() {
+  const version = ++loadVersion;
   const entries = getCartItems();
+  const catalogue = localStorage.getItem("technest-admin-overrides-v1");
+  loading = true;
+  checkoutButton.disabled = true;
+  actionStatus.classList.remove("purchase-success");
+  actionStatus.textContent = "";
   if (entries.length === 0) {
+    loadedProducts = [];
+    loading = false;
     renderCart();
     if (getOrderHistory().length) showPurchaseConfirmation();
     return;
   }
 
+  // Never leave stale totals or checkout controls available during refresh.
+  list.replaceChildren();
+  list.hidden = false;
+  status.hidden = false;
+  summary.hidden = true;
+  empty.hidden = true;
+  historySection.hidden = true;
   status.textContent = "Loading cart...";
   const results = await Promise.allSettled(
     entries.map((entry) => getProductById(entry.id)),
   );
+  // An older request must not overwrite a newer cross-tab refresh.
+  if (version !== loadVersion) return;
+  if (JSON.stringify(entries) !== JSON.stringify(getCartItems()) ||
+      catalogue !== localStorage.getItem("technest-admin-overrides-v1")) {
+    return loadCart();
+  }
   loadedProducts = results
     .filter((result) => result.status === "fulfilled")
     .map((result) => result.value)
     .filter((product) => product && Number.isFinite(product.price));
+  loading = false;
   renderCart();
 
   if (entries.some((entry) => findLoadedProduct(entry.id) && !canPurchase(entry))) {
@@ -280,6 +319,12 @@ async function loadCart() {
 
 // Simulate a successful purchase; no payment or API order is submitted.
 function checkout() {
+  // Storage events are asynchronous; check again at the point of purchase.
+  if (!cartIsCurrent()) {
+    loadCart();
+    actionStatus.textContent = "Your cart changed in another tab. Review it before purchasing.";
+    return;
+  }
   const entries = getCartItems();
   if (
     entries.length === 0 ||
@@ -305,6 +350,13 @@ function checkout() {
 checkoutButton.disabled = true;
 checkoutButton.addEventListener("click", checkout);
 loadCart();
+
+window.addEventListener("storage", (event) => {
+  if (event.key === "technest-cart-v1" ||
+      event.key === "technest-admin-overrides-v1" || event.key === null) {
+    loadCart();
+  }
+});
 
 // Refresh cached pages when returning through browser Back/Forward.
 window.addEventListener("pageshow", (event) => {

@@ -14,6 +14,7 @@ const actionStatus = document.querySelector("#favorites-action-status");
 const empty = document.querySelector("#favorites-empty");
 
 let loadedProducts = [];
+let loadVersion = 0;
 
 // This redraws from memory, without additional API calls.
 function renderFavorites() {
@@ -52,7 +53,11 @@ function renderFavorites() {
 }
 
 async function loadFavorites() {
+  const version = ++loadVersion;
   const ids = getFavoriteIds();
+  actionStatus.textContent = "";
+  // Remove unsaved products immediately, even while new items are loading.
+  renderFavorites();
   if (ids.length === 0) {
     renderFavorites();
     return;
@@ -61,6 +66,10 @@ async function loadFavorites() {
   status.textContent = "Loading favorites...";
   // One missing/deleted API item must not hide all other favorites.
   const results = await Promise.allSettled(ids.map((id) => getProductById(id)));
+  if (version !== loadVersion) return;
+  if (JSON.stringify(ids) !== JSON.stringify(getFavoriteIds())) {
+    return loadFavorites();
+  }
   loadedProducts = results
     .filter((result) => result.status === "fulfilled")
     .map((result) => result.value);
@@ -72,6 +81,13 @@ async function loadFavorites() {
 }
 
 loadFavorites();
+
+window.addEventListener("storage", (event) => {
+  if (event.key === "technest-favorites" ||
+      event.key === "technest-admin-overrides-v1" || event.key === null) {
+    loadFavorites();
+  }
+});
 
 // Refresh cached pages when returning through browser Back/Forward.
 window.addEventListener("pageshow", (event) => {
