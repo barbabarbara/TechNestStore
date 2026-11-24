@@ -20,7 +20,7 @@
 - [X] **5. Build the product details page**
   - URL parameters, `URLSearchParams`, and individual product requests.
 
-- [ ] **6. Implement favorites and shopping cart**
+- [X] **6. Implement favorites and shopping cart**
   - LocalStorage, arrays, quantities, calculations, and shared state.
 
 - [ ] **7. Build the admin page**
@@ -33,7 +33,7 @@
 
 ## Current Focus
 
-**6. Implement favorites and shopping cart**
+**7. Build the admin page**
 
 ## How to Use This Roadmap
 

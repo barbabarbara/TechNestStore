@@ -2,51 +2,124 @@
 <html lang="en">
 
 <head>
-    <!-- Character encoding -->
     <meta charset="UTF-8" />
-
-    <!-- Responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Page description -->
-    <meta name="description" content="Manage products in the TechNest administration panel." />
-
-    <!-- Browser tab title -->
+    <meta name="description" content="Manage the TechNestStore demonstration product catalogue." />
     <title>Admin | TechNest</title>
-
-    <!-- External CSS -->
     <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
 </head>
 
-<!-- Page configuration for the shared layout -->
-
 <body data-page="admin" data-root="../">
-    <!-- Accessibility: skip navigation -->
-    <a class="skip-link" href="#main">
-        Skip to main content
-    </a>
-
-    <!-- JavaScript generates the shared header -->
+    <a class="skip-link" href="#main">Skip to main content</a>
     <div id="site-header"></div>
 
-    <!-- Main content -->
-    <main id="main" class="shell">
-        <section aria-labelledby="admin-heading">
-            <h1 id="admin-heading">Product administration</h1>
-
-            <p>
-                Manage the products displayed in the TechNest store.
-            </p>
-
-            <!-- Product management features will be added later. -->
+    <main id="main" class="shell admin-main">
+        <section class="admin-intro" aria-labelledby="admin-heading">
+            <p class="admin-eyebrow">TECHNEST / PRODUCT MANAGEMENT</p>
+            <h1 id="admin-heading">Manage your catalogue.</h1>
+            <p>Create, edit and delete electronics in a clean, browser-local demonstration.</p>
+            <p class="admin-disclaimer">DummyJSON simulates changes; this browser stores a local preview. This is not a
+                secure production admin panel.</p>
         </section>
+
+        <section class="admin-stats" aria-label="Local catalogue changes">
+            <div class="admin-stat"><span>Locally created</span><strong id="admin-created-count">0</strong></div>
+            <div class="admin-stat"><span>Locally edited</span><strong id="admin-edited-count">0</strong></div>
+            <div class="admin-stat"><span>Hidden products</span><strong id="admin-deleted-count">0</strong></div>
+        </section>
+
+        <div class="admin-layout">
+            <section class="admin-panel admin-form-panel" aria-labelledby="admin-form-heading">
+                <div class="admin-panel-heading">
+                    <p class="admin-eyebrow">PRODUCT DETAILS</p>
+                    <h2 id="admin-form-heading">Create product</h2>
+                    <p>Enter the information shown to shoppers.</p>
+                </div>
+                <form id="admin-product-form">
+                    <input id="admin-edit-id" type="hidden" />
+
+                    <div class="admin-field">
+                        <label for="admin-title">Product name <span aria-hidden="true">*</span></label>
+                        <input id="admin-title" name="title" type="text" maxlength="120" required
+                            placeholder="e.g. Wireless headphones" />
+                    </div>
+                    <div class="admin-field">
+                        <label for="admin-brand">Brand <span aria-hidden="true">*</span></label>
+                        <input id="admin-brand" name="brand" type="text" maxlength="70" required
+                            placeholder="e.g. TechNest" />
+                    </div>
+                    <div class="admin-field">
+                        <label for="admin-category">Category <span aria-hidden="true">*</span></label>
+                        <select id="admin-category" name="category" required>
+                            <option value="smartphones">Smartphones</option>
+                            <option value="laptops">Laptops</option>
+                            <option value="tablets">Tablets</option>
+                            <option value="mobile-accessories">Mobile accessories</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-pair">
+                        <div class="admin-field">
+                            <label for="admin-price">Price (USD) <span aria-hidden="true">*</span></label>
+                            <input id="admin-price" name="price" type="number" min="0.01" max="1000000" step="0.01"
+                                required placeholder="199.99" />
+                        </div>
+                        <div class="admin-field">
+                            <label for="admin-stock">Stock <span aria-hidden="true">*</span></label>
+                            <input id="admin-stock" name="stock" type="number" min="0" max="100000" step="1" required
+                                placeholder="10" />
+                        </div>
+                    </div>
+                    <div class="admin-field">
+                        <label for="admin-description">Description <span aria-hidden="true">*</span></label>
+                        <textarea id="admin-description" name="description" rows="4" maxlength="1000" required
+                            placeholder="What makes this product useful?"></textarea>
+                    </div>
+                    <div class="admin-field">
+                        <label for="admin-image">Image URL <span class="admin-optional">optional</span></label>
+                        <input id="admin-image" name="thumbnail" type="url"
+                            placeholder="https://example.com/product.jpg" />
+                        <small>Leave empty to use a neutral product illustration.</small>
+                    </div>
+                    <div class="admin-form-actions">
+                        <button id="admin-submit" class="admin-button admin-button-primary" type="submit">Create
+                            product</button>
+                        <button id="admin-cancel" class="admin-button admin-button-secondary" type="button"
+                            hidden>Cancel edit</button>
+                    </div>
+                </form>
+                <p id="admin-feedback" class="admin-feedback" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="admin-panel admin-list-panel" aria-labelledby="admin-list-heading">
+                <div class="admin-panel-heading admin-list-heading">
+                    <div>
+                        <p class="admin-eyebrow">INVENTORY</p>
+                        <h2 id="admin-list-heading">Electronics <span id="admin-total-count"
+                                class="admin-count">0</span></h2>
+                        <p>Select a product to edit it or remove it from the local catalogue.</p>
+                    </div>
+                    <button id="admin-reset" class="admin-button admin-button-secondary" type="button">Reset local
+                        changes</button>
+                </div>
+                <div class="admin-list-controls">
+                    <label for="admin-search">Search products</label>
+                    <input id="admin-search" type="search" placeholder="Name, brand or ID..." autocomplete="off" />
+                </div>
+                <p id="admin-list-status" class="admin-list-status" role="status" aria-live="polite">Loading products...
+                </p>
+                <div id="admin-products" class="admin-products"></div>
+                <button id="admin-retry" class="admin-button admin-button-secondary" type="button" hidden>Retry
+                    loading</button>
+            </section>
+        </div>
     </main>
 
-    <!-- JavaScript generates the shared footer -->
     <div id="site-footer"></div>
-
-    <!-- Shared JavaScript layout -->
-    <script type="module" src="../js/layout.js"></script>
+    <noscript>
+        <p class="shell">Please enable JavaScript to use the Admin demonstration.</p>
+    </noscript>
+    <script type="module" src="../js/admin.js"></script>
 </body>
 
 </html>

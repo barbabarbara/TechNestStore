@@ -123,6 +123,20 @@ async function loadProducts() {
       clearFiltersButton,
     ])
       control.disabled = false;
+
+    // Open a specific category when arriving from a homepage card.
+    const requestedCategory = new URLSearchParams(window.location.search).get(
+      "category",
+    );
+    if (
+      requestedCategory &&
+      [...categoryFilter.options].some(
+        (option) => option.value === requestedCategory,
+      )
+    ) {
+      categoryFilter.value = requestedCategory;
+    }
+
     updateCatalogue();
   } catch (error) {
     console.error("Could not load products:", error);
