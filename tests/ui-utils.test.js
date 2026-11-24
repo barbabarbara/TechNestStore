@@ -95,3 +95,10 @@ test("repeated layout initialization does not duplicate the favicon", () => {
   assert.equal(document.head.children.filter((element) => element.rel === "icon").length, 1);
   assert.equal(document.querySelector('link[rel="icon"]'), favicon);
 });
+
+test("shared navigation links to Orders and marks it active on the Orders page", () => {
+  document.body.dataset.root = "../";
+  document.body.dataset.page = "orders";
+  ui.initLayout();
+  assert.match(placeholderHeader.innerHTML, /href="\.\.\/pages\/orders\.html" aria-current="page"/);
+});

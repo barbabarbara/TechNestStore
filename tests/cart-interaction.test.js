@@ -299,3 +299,48 @@ test("receipt shows purchased items and persists across cart reload", async () =
   assert.equal(get("cart-subtotal").textContent, "$0.00");
   assert.equal(get("cart-summary-heading").textContent, "Current cart");
 });
+
+test("cart shows only the newest receipt, expanded, after a second checkout", async () => {
+  const { getOrderHistory } = await import("../js/admin-data.js");
+  const first = getOrderHistory()[0];
+  addToCart(121, 1);
+  await import("../js/cart.js?secondPurchase");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(get("order-history").hidden, true);
+  assert.equal(get("checkout-button").disabled, false);
+  get("checkout-button").click();
+  const orders = getOrderHistory();
+  assert.equal(orders.length, 2);
+  assert.equal(orders[1].number, first.number);
+  assert.equal(get("order-receipts").children.length, 1);
+  const [receipt] = get("order-receipts").children;
+  assert.equal(receipt.open, true);
+  assert.ok(receipt.children[0].textContent.startsWith(orders[0].number));
+  assert.equal(get("cart-subtotal").textContent, "$0.00");
+});
+
+test("Orders page shows all receipts newest first and reflects Admin reset", async () => {
+  const { getOrderHistory, resetProductOverrides } = await import("../js/admin-data.js");
+  const orders = getOrderHistory();
+  for (const id of ["orders-receipts", "orders-status", "orders-empty"]) {
+    elements.set(`#${id}`, new Element());
+  }
+  document.body.dataset.page = "orders";
+  await import("../js/orders.js");
+  assert.equal(get("orders-status").textContent, "2 completed orders.");
+  assert.equal(get("orders-empty").hidden, true);
+  const receipts = get("orders-receipts").children;
+  assert.equal(receipts.length, 2);
+  assert.ok(receipts[0].children[0].textContent.startsWith(orders[0].number));
+  assert.ok(receipts[1].children[0].textContent.startsWith(orders[1].number));
+  assert.equal(receipts.every((receipt) => receipt.open === false), true);
+  resetProductOverrides();
+  assert.equal(get("orders-status").textContent, "0 completed orders.");
+  assert.equal(get("orders-receipts").children.length, 0);
+  assert.equal(get("orders-empty").hidden, false);
+  document.body.dataset.page = "cart";
+  await import("../js/cart.js?afterReset");
+  assert.equal(get("order-history").hidden, true);
+  assert.equal(get("order-receipts").children.length, 0);
+  assert.equal(get("cart-empty").hidden, false);
+});

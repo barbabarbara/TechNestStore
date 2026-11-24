@@ -12,10 +12,11 @@ const pages = [
   ["pages/product.html", "products", "../", "../js/product.js"],
   ["pages/favorites.html", "favorites", "../", "../js/favorites.js"],
   ["pages/cart.html", "cart", "../", "../js/cart.js"],
+  ["pages/orders.html", "orders", "../", "../js/orders.js"],
   ["pages/admin.html", "admin", "../", "../js/admin.js"],
 ];
 
-test("all six pages have working shared layout placeholders and one stylesheet", () => {
+test("all seven pages have working shared layout placeholders and one stylesheet", () => {
   for (const [file, page, rootPath] of pages) {
     const html = read(file);
     assert.match(html, /id="site-header"/, `${file}: missing shared header`);
@@ -85,4 +86,11 @@ test("Homepage category query is processed by products.js", () => {
   const code = read("js/products.js");
   assert.match(code, /URLSearchParams/);
   assert.match(code, /categoryFilter\.value\s*=\s*requestedCategory/);
+});
+
+test("Orders is reachable from the Cart and every fallback navigation", () => {
+  assert.match(read("pages/cart.html"), /href="\.\/orders\.html">View all orders/);
+  for (const [file] of pages) {
+    assert.match(read(file), /<noscript>\s*<nav[\s\S]*?href="[^\"]*orders\.html">Orders<\/a>[\s\S]*?<\/nav>\s*<\/noscript>/, file);
+  }
 });

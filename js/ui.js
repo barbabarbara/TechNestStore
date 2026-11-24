@@ -23,6 +23,11 @@ const navigationItems = [
     page: "cart",
   },
   {
+    label: "Orders",
+    path: "pages/orders.html",
+    page: "orders",
+  },
+  {
     label: "Admin",
     path: "pages/admin.html",
     page: "admin",

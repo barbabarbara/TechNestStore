@@ -1148,6 +1148,15 @@ main.shell > section > .purchase-success {
 }
 .order-history { margin-block: 24px; }
 .order-history h2 { margin: 0 0 16px; }
+.order-history-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.order-history-header h2 { margin: 0; }
 .order-receipt {
   margin-bottom: 12px;
   padding: clamp(16px, 3vw, 28px);
