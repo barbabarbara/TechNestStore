@@ -38,8 +38,8 @@ No frontend framework, build step or npm package installation is required. An in
 
 ## Testing
 
-- [Manual testing checklist](MANUAL_TESTS.md) — functional, responsive, accessibility and edge-case scenarios.
-- [Automated test files](tests/) — tests for application logic, storage, API integration and user interactions.
+- [Manual testing checklist](docs/MANUAL_TESTS.md) — functional, responsive, accessibility and edge-case scenarios.
+- Automated test files — tests for application logic, storage, API integration and user interactions.
 
 With a recent version of Node.js installed, run the following commands from the project root:
 

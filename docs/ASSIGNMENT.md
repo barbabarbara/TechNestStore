@@ -1,3 +1,218 @@
+# Assignment – Build an E-commerce Website with HTML, CSS and JavaScript
+
+*English translation of the original Swedish assignment. The original Swedish version follows below.*
+
+## 1. Assignment description
+
+In this assignment, you will develop a functional e-commerce website using **HTML, CSS and JavaScript**.
+
+The website must allow users to browse products, search, filter, sort, manage favorites, add products to a shopping cart and complete a simulated purchase.
+
+You must retrieve product information from an external API and implement CRUD functionality for products.
+
+The focus is on JavaScript, API handling, DOM manipulation, usability, responsive design and accessibility.
+
+## 2. Technologies and tools
+
+The following technologies must be used:
+
+- **HTML5** – for the website's structure.
+- **CSS3** – for design, layout and responsiveness.
+- **JavaScript (Vanilla JS)** – for functionality and interactivity.
+- **Fetch API** – for communication with the API.
+- **LocalStorage or SessionStorage** – for storing information in the browser.
+- **Git and GitHub** – for version control and submission.
+
+You must use the following API:
+
+[https://dummyjson.com/docs/products](https://dummyjson.com/docs/products)
+
+## 3. Website page requirements
+
+The website must contain **at least four different pages or views**, with working navigation between them.
+
+Examples of pages:
+
+### Home page
+
+- Introduce the website and its purpose.
+- Display featured products from the API.
+- Provide a clear link to the product catalog.
+
+### Product catalog
+
+- Display products retrieved from the API.
+- Display product images, names, prices and other relevant information.
+- Implement searching, filtering and sorting.
+- Allow users to add products to the shopping cart and favorites list.
+- Provide links to the corresponding product detail pages.
+
+### Product details
+
+- Display information about a selected product.
+- Display the product image, name, description, price and category.
+- Allow users to add the product to the shopping cart and favorites list.
+
+### Favorites
+
+- Display products that users have marked as favorites.
+- Allow users to remove products from the favorites list.
+- Display a clear message when the favorites list is empty.
+
+### Shopping cart and checkout
+
+- Display products that users have added to the shopping cart.
+- Display quantities, prices and the total amount.
+- Allow users to change quantities or remove products.
+- Provide a button to complete a simulated purchase.
+- Display a clear confirmation message when the purchase has been completed.
+
+You are welcome to create additional pages and features.
+
+## 4. Functional requirements
+
+### 4.1 API and CRUD
+
+All products must be retrieved from the DummyJSON Products API.
+
+You must implement the following CRUD operations:
+
+- **Create:** Add a new product through the API.
+- **Read:** Retrieve and display products from the API.
+- **Update:** Update information about an existing product through the API.
+- **Delete:** Remove a product through the API.
+
+A user interface must be provided for performing these operations, for example through forms and buttons.
+
+**Important:** DummyJSON is a test API. Create, Update and Delete operations are simulated by the API and are not permanently stored on the server. You must be able to demonstrate that the API requests work and handle the responses correctly in the user interface.
+
+### 4.2 Searching, filtering and sorting
+
+Users must be able to:
+
+- Search for products by name.
+- Filter products by category.
+- Sort products by price in both ascending and descending order.
+
+These features must work together. For example, users must be able to search for a product within a selected category and then sort the results by price.
+
+If no products match the search or filter criteria, a clear message must be displayed.
+
+### 4.3 Favorites list
+
+- Users must be able to add products to their favorites.
+- Favorites must be displayed on a separate page.
+- Users must be able to remove favorites.
+- The favorites list must be saved using LocalStorage or SessionStorage.
+
+### 4.4 Shopping cart and payment
+
+- Users must be able to add products to the shopping cart.
+- The same product must be able to be added multiple times.
+- Users must be able to change product quantities.
+- Users must be able to remove products.
+- The total amount must be calculated automatically.
+- The shopping cart must be displayed at checkout.
+
+**Simulated payment:**
+
+When the user clicks the "Buy" button, a purchase must be simulated.
+
+After a successful purchase:
+
+1. A clear confirmation message must be displayed on the page, for example, "Thank you for your purchase! Your order has been completed."
+2. The shopping cart must be emptied.
+3. The total amount must be reset.
+
+No real payment service needs to be integrated, and no real payment information must be collected.
+
+### 4.5 Loading states and error handling
+
+**All Fetch API requests must have a loading state.**
+
+This means that users must receive visual feedback while an API request is in progress.
+
+Examples:
+
+- Display a spinner or the text "Loading products..."
+- Display "Saving product..." during Create or Update operations.
+- Display "Deleting product..." during Delete operations.
+- Hide the loading indicator when the request has completed.
+- Display a clear, understandable error message if the API request fails.
+
+Users should not have to wonder whether the website is working or has stopped functioning.
+
+### 4.6 LocalStorage or SessionStorage
+
+You must use at least one of the following:
+
+- `localStorage`
+- `sessionStorage`
+
+These can be used, for example, for the favorites list, shopping cart or other user preferences.
+
+You must be able to explain what information you store and why.
+
+### 4.7 setTimeout or setInterval
+
+You must use at least one of the following JavaScript functions:
+
+- `setTimeout()`
+- `setInterval()`
+
+The function must serve a clear purpose.
+
+Examples:
+
+- Display a confirmation message that disappears after a few seconds.
+- Create an automatic image carousel.
+- Implement a timer.
+
+You must be able to explain how and why the function is used.
+
+## 5. Design, navigation and responsiveness
+
+The website must have a well-planned, consistent and user-friendly design.
+
+### Header and navigation
+
+- A clear header displaying the website's name or logo.
+- Navigation between all pages.
+- A working mobile menu (hamburger menu).
+- Clear indicators or feedback for navigation and interactive elements.
+
+### Responsive design
+
+The website must work on:
+
+- Mobile phones
+- Tablets
+- Computers
+
+The layout must adapt to the screen size, and no important functionality may be lost on smaller screens.
+
+### Accessibility and WCAG
+
+The website must follow relevant accessibility principles in accordance with WCAG 2.2 Level AA.
+
+## 6. Code quality and structure
+
+Your code must be clear, organized and easy to understand.
+
+The following are expected:
+
+- Semantic HTML.
+- Structured CSS.
+- JavaScript organized into reusable functions.
+- Clear variable and function names.
+- Avoid unnecessary code duplication.
+- Use `async/await` or Promises for API requests.
+- Handle errors using, for example, `try/catch`.
+- Avoid JavaScript errors in the browser console.
+
+---
+
+
 # Inlämningsuppgift – Bygg en E-commerce med HTML, CSS och JavaScript
 
 ## 1. Uppgiftsbeskrivning
