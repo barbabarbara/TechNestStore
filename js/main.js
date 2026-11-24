@@ -1,5 +1,6 @@
 // Import the shared layout function.
 import { initLayout } from "./ui.js";
+import { initFeaturedProducts } from "./featured-products.js";
 
 // Create the header and footer.
 initLayout();
@@ -33,3 +34,6 @@ if (informationButton && storeInformation) {
       : "About TechNest";
   });
 }
+
+// Load the featured product carousel.
+initFeaturedProducts();

@@ -141,7 +141,44 @@
       </div>
     </section>
 
-    <!-- 3. Small promo section, rather than a second oversized hero. -->
+    <!-- 3. Featured products from the API, one at a time. -->
+    <section class="home-featured home-section shell" aria-labelledby="featured-title"
+      aria-roledescription="carousel">
+      <div class="home-section-header featured-header">
+        <div>
+          <p class="home-eyebrow">HANDPICKED FOR YOU</p>
+          <h2 id="featured-title">Featured product</h2>
+        </div>
+        <div class="featured-controls" id="featured-controls" hidden>
+          <button class="featured-arrow" id="featured-prev" type="button"
+            aria-label="Previous featured product" aria-controls="featured-slide">‹</button>
+          <button class="featured-arrow" id="featured-next" type="button"
+            aria-label="Next featured product" aria-controls="featured-slide">›</button>
+        </div>
+      </div>
+      <p id="featured-status" class="featured-status" role="status">Loading featured products…</p>
+      <div id="featured-slide" class="featured-slide" hidden>
+        <div class="featured-copy">
+          <p id="featured-brand" class="featured-brand"></p>
+          <h3 id="featured-name"></h3>
+          <p id="featured-tagline" class="featured-tagline"></p>
+          <p id="featured-description" class="featured-description"></p>
+          <p id="featured-price" class="featured-price"></p>
+          <a id="featured-link" class="home-action home-action-primary" href="./pages/products.html">
+            View product <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="featured-media">
+          <img id="featured-image" alt="" width="480" height="480" loading="lazy" />
+        </div>
+      </div>
+      <div id="featured-pagination" class="featured-pagination" hidden>
+        <div id="featured-dots" class="featured-dots" role="group" aria-label="Choose featured product"></div>
+        <p id="featured-count" class="featured-count" aria-live="polite" aria-atomic="true"></p>
+      </div>
+    </section>
+
+    <!-- 4. Small promo section, rather than a second oversized hero. -->
     <section class="home-banner shell" aria-labelledby="home-banner-title">
       <div class="home-banner-copy">
         <h2 id="home-banner-title">Smart choices. Simple living.</h2>

@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check js/api.js && node --check js/admin-data.js && node --check js/admin.js && node --check js/storage.js && node --check js/products.js && node --check js/product-card.js && node --check js/ui.js && node --check js/cart.js && node --check js/order-receipts.js && node --check js/orders.js && npm test"
+    "check": "node --check js/main.js && node --check js/featured-products.js && node --check js/api.js && node --check js/admin-data.js && node --check js/admin.js && node --check js/storage.js && node --check js/products.js && node --check js/product-card.js && node --check js/ui.js && node --check js/cart.js && node --check js/order-receipts.js && node --check js/orders.js && npm test"
   }
 }
