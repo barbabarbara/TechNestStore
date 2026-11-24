@@ -142,7 +142,7 @@
     </section>
 
     <!-- 3. Featured products from the API, one at a time. -->
-    <section class="home-featured home-section shell" aria-labelledby="featured-title"
+    <section id="featured-carousel" class="home-featured home-section shell" aria-labelledby="featured-title"
       aria-roledescription="carousel">
       <div class="home-section-header featured-header">
         <div>
@@ -150,6 +150,8 @@
           <h2 id="featured-title">Featured product</h2>
         </div>
         <div class="featured-controls" id="featured-controls" hidden>
+          <button class="featured-arrow featured-rotation" id="featured-rotation" type="button"
+            aria-label="Pause automatic rotation" aria-controls="featured-slide">Ⅱ</button>
           <button class="featured-arrow" id="featured-prev" type="button"
             aria-label="Previous featured product" aria-controls="featured-slide">‹</button>
           <button class="featured-arrow" id="featured-next" type="button"
@@ -157,7 +159,7 @@
         </div>
       </div>
       <p id="featured-status" class="featured-status" role="status">Loading featured products…</p>
-      <div id="featured-slide" class="featured-slide" hidden>
+      <div id="featured-slide" class="featured-slide" aria-live="off" hidden>
         <div class="featured-copy">
           <p id="featured-brand" class="featured-brand"></p>
           <h3 id="featured-name"></h3>
@@ -174,7 +176,7 @@
       </div>
       <div id="featured-pagination" class="featured-pagination" hidden>
         <div id="featured-dots" class="featured-dots" role="group" aria-label="Choose featured product"></div>
-        <p id="featured-count" class="featured-count" aria-live="polite" aria-atomic="true"></p>
+        <p id="featured-count" class="featured-count" aria-live="off" aria-atomic="true"></p>
       </div>
     </section>
 

@@ -33,7 +33,7 @@ The application uses the [DummyJSON Products API](https://dummyjson.com/docs/pro
 
 | Feature | Description |
 | --- | --- |
-| Featured products | Browse up to three selected, available API products in a manually controlled homepage carousel. |
+| Featured products | Browse up to ten unique, in-stock API products across the four electronics categories in a homepage carousel with automatic rotation every six seconds, manual navigation and Play/Pause. |
 | Product catalogue | Browse smartphones, laptops, tablets and mobile accessories. |
 | Search, filters and sorting | Combine text search with category and brand filters; sort by name or price in ascending or descending order for price. |
 | Product details | View product images, descriptions, prices, specifications and stock availability. |
@@ -189,7 +189,8 @@ No payment request or real order is submitted to DummyJSON during checkout. Rece
 - `Promise.allSettled()` retrieves the four electronics categories concurrently and preserves successful results if some requests fail.
 - `setTimeout()` and `AbortController` cancel a slow API request after 12 seconds; `clearTimeout()` cleans up the timer.
 - A 180 ms search debounce in `products.js` avoids re-rendering the catalogue on every keystroke. Filter and sort changes respond immediately.
-- The featured product carousel is manually controlled; `setInterval()` is not required for the shop.
+- The carousel selects up to ten unique, in-stock products, prioritizing preferred titles and categories, then filling remaining slots with available electronics. If fewer than ten eligible products exist, it displays fewer.
+- `setInterval()` rotates featured products every six seconds (a full rotation of ten products takes 60 seconds); `clearInterval()` stops rotation before restarting or pausing. Rotation pauses while the carousel is hovered or the tab is hidden. Keyboard focus and manual navigation stop rotation until Play is selected. Reduced-motion users start with autoplay disabled. A timer runs only when at least two products are available.
 
 ## API and CRUD operations
 
@@ -252,9 +253,9 @@ npm test
 npm run check
 ```
 
-**Latest verified result:** 94 passed, 0 failed and 0 skipped using `npm run check` with Node.js 22.16.0 on the reviewed project version.
+**Latest verified result:** 106 passed, 0 failed and 0 skipped using `npm run check` with Node.js 22.16.0 on the reviewed project version.
 
-The automated suite covers API requests and caching, product rendering, combined search and filters, carousel behavior, browser storage, cart calculations, cross-tab cart and Favorites synchronization, checkout, inventory, order receipts, reset behavior and regression cases.
+The automated suite covers API requests and caching, product rendering, combined search and filters, carousel behavior (18 tests, including ten-product selection, duplicate prevention, stock filtering, automatic rotation and manual navigation), browser storage, cart calculations, cross-tab cart and Favorites synchronization, checkout, inventory, order receipts, reset behavior and regression cases.
 
 Use the [manual testing checklist](docs/MANUAL_TESTS.md) to complement automated testing with real-browser interactions, network failures, mobile layouts and accessibility checks. Passing automated tests does not establish full browser compatibility or production security.
 
