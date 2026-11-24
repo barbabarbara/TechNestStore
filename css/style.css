@@ -2200,3 +2200,117 @@ main.shell .admin-intro h1 {
   color: var(--blue);
   font-weight: 600;
 }
+
+/* Shared mobile navigation and narrow-screen layout. */
+.menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+}
+@media (max-width: 780px) {
+  .site-header {
+    position: relative;
+    z-index: 10;
+    padding-block: 10px;
+  }
+  .header-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    flex: none;
+  }
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 12px 20px;
+    background: white;
+    box-shadow: 0 14px 30px rgb(29 29 31 / 12%);
+  }
+  .site-nav.is-open {
+    display: block;
+  }
+  .nav-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .nav-link {
+    display: flex;
+    min-height: 44px;
+  }
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+  .home-hero-copy {
+    min-width: 0;
+  }
+  .home-hero h1,
+  .home-hero h1 span {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .home-hero-actions > * {
+    max-width: 100%;
+  }
+}
+@media (max-width: 560px) {
+  .container,
+  .shell {
+    width: calc(100% - 32px);
+  }
+  .home-hero {
+    border-radius: 0 0 23px 23px;
+  }
+  .home-hero-copy {
+    padding: 55px 25px 22px;
+  }
+  .home-hero h1 {
+    font-size: clamp(1.6rem, 8.5vw, 2.8rem);
+  }
+  .home-eyebrow {
+    overflow-wrap: anywhere;
+  }
+  .home-hero-art {
+    min-height: 240px;
+  }
+  .home-proof {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 360px) {
+  .home-hero-copy {
+    padding-inline: 16px;
+  }
+  .home-collection-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -89,7 +89,12 @@ export function initLayout() {
           TechNest<span class="brand-dot" aria-hidden="true">.</span>
         </a>
 
-        <nav class="site-nav" aria-label="Main navigation">
+        <button class="menu-toggle" type="button" id="menu-toggle"
+          aria-controls="site-navigation" aria-expanded="false"
+          aria-label="Open navigation menu">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <nav id="site-navigation" class="site-nav" aria-label="Main navigation">
           <ul class="nav-list">
             ${navigationHTML}
           </ul>
@@ -97,6 +102,34 @@ export function initLayout() {
       </div>
     </header>
   `;
+
+  const menuToggle = document.querySelector("#menu-toggle");
+  const navigation = document.querySelector("#site-navigation");
+  if (menuToggle && navigation) {
+    const setMenuOpen = (open) => {
+      navigation.classList.toggle("is-open", open);
+      menuToggle.setAttribute("aria-expanded", String(open));
+      menuToggle.setAttribute(
+        "aria-label",
+        open ? "Close navigation menu" : "Open navigation menu",
+      );
+    };
+    menuToggle.addEventListener("click", () => {
+      setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+    });
+    navigation.addEventListener("click", (event) => {
+      if (event.target.closest("a")) setMenuOpen(false);
+    });
+    headerContainer.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        menuToggle.getAttribute("aria-expanded") === "true"
+      ) {
+        setMenuOpen(false);
+        menuToggle.focus();
+      }
+    });
+  }
 
   // Initialize counts after the navigation links exist in the DOM.
   updateNavigationCounts();
