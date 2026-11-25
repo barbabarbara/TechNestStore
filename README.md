@@ -243,21 +243,9 @@ The project aims to follow relevant WCAG 2.2 Level AA principles. Full conforman
 
 ## Testing
 
-Run these commands from the project root using Node.js:
 
-```bash
-# Run automated tests
-npm test
 
-# Run configured JavaScript syntax checks and automated tests
-npm run check
-```
-
-**Latest verified result:** 106 passed, 0 failed and 0 skipped using `npm run check` with Node.js 22.16.0 on the reviewed project version.
-
-The automated suite covers API requests and caching, product rendering, combined search and filters, carousel behavior (18 tests, including ten-product selection, duplicate prevention, stock filtering, automatic rotation and manual navigation), browser storage, cart calculations, cross-tab cart and Favorites synchronization, checkout, inventory, order receipts, reset behavior and regression cases.
-
-Use the [manual testing checklist](docs/MANUAL_TESTS.md) to complement automated testing with real-browser interactions, network failures, mobile layouts and accessibility checks. Passing automated tests does not establish full browser compatibility or production security.
+Use the [manual testing checklist](docs/MANUAL_TESTS.md) to double check the site.
 
 ## Documentation
 
