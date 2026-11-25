@@ -10,3 +10,5 @@ Thumbs.db
 .fallow/
 venv/
 .venv/
+# Automated tests
+/tests/
